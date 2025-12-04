@@ -335,8 +335,12 @@
                 <button id="adminLoginBtn" class="auth-btn primary" style="width: 100%" onclick="openLoginModal()">
                     <i class="fas fa-sign-in-alt"></i> Admin Login
                 </button>
+                <!-- 1b. General Sign Up (always available for creating regular accounts) -->
+                <button id="signUpBtn" class="auth-btn" style="width: 100%; margin-top:8px;" onclick="openSignupModal()">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </button>
                 <!-- 2. First Admin Setup Button (Visible only if NO admin account exists) -->
-                <button id="adminSetupBtn" class="auth-btn success hidden" style="width: 100%;" onclick="openSetupModal()">
+                <button id="adminSetupBtn" class="auth-btn success hidden" style="width: 100%;" onclick="openAdminSetupModal()">
                     <i class="fas fa-user-plus"></i> Register First Admin
                 </button>
                 <!-- 3. Logout Button (Visible if admin is logged in) -->
@@ -486,7 +490,23 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Barangay</label>
-                            <input type="text" id="regBarangay" class="form-input" required>
+                            <select id="regBarangay" class="form-input" required>
+                                <option value="">Select Barangay</option>
+                                <option>Church in Bagong Kahayag</option>
+                                <option>Church in Baking</option>
+                                <option>Church in Biswangan</option>
+                                <option>Church in Bululawan</option>
+                                <option>Church in Dagum</option>
+                                <option>Church in Gasa</option>
+                                <option>Church in Gatub</option>
+                                <option>Church in Lukuan</option>
+                                <option>Church in Matalang</option>
+                                <option>Church in Poblacion</option>
+                                <option>Church in Sapang Pinoles</option>
+                                <option>Church in Sebuguey</option>
+                                <option>Church in Tiwales</option>
+                                <option>Church in Tubod</option>
+                            </select>
                         </div>
                          <div class="form-group">
                             <label class="form-label">Training Attended</label>
@@ -538,7 +558,23 @@
                         </div>
                          <div class="form-group">
                             <label class="form-label">Barangay</label>
-                            <input type="text" id="ypBarangay" class="form-input" required>
+                            <select id="ypBarangay" class="form-input" required>
+                                <option value="">Select Barangay</option>
+                                <option>Church in Bagong Kahayag</option>
+                                <option>Church in Baking</option>
+                                <option>Church in Biswangan</option>
+                                <option>Church in Bululawan</option>
+                                <option>Church in Dagum</option>
+                                <option>Church in Gasa</option>
+                                <option>Church in Gatub</option>
+                                <option>Church in Lukuan</option>
+                                <option>Church in Matalang</option>
+                                <option>Church in Poblacion</option>
+                                <option>Church in Sapang Pinoles</option>
+                                <option>Church in Sebuguey</option>
+                                <option>Church in Tiwales</option>
+                                <option>Church in Tubod</option>
+                            </select>
                         </div>
                         <div style="display: flex; gap: 1rem;">
                             <div class="form-group" style="flex: 1;">
@@ -566,6 +602,28 @@
 
                 <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
                     <h3>All Young People</h3>
+                </div>
+                <!-- Barangay Filter -->
+                <div style="display:flex; gap:1rem; align-items:center; margin-bottom:1rem;">
+                    <label class="form-label" style="margin:0; min-width:110px;">Filter Barangay</label>
+                    <select id="barangayFilter" class="form-input" onchange="applyBarangayFilter()">
+                        <option value="">All Barangays</option>
+                        <option>Church in Bagong Kahayag</option>
+                        <option>Church in Baking</option>
+                        <option>Church in Biswangan</option>
+                        <option>Church in Bululawan</option>
+                        <option>Church in Dagum</option>
+                        <option>Church in Gasa</option>
+                        <option>Church in Gatub</option>
+                        <option>Church in Lukuan</option>
+                        <option>Church in Matalang</option>
+                        <option>Church in Poblacion</option>
+                        <option>Church in Sapang Pinoles</option>
+                        <option>Church in Sebuguey</option>
+                        <option>Church in Tiwales</option>
+                        <option>Church in Tubod</option>
+                    </select>
+                    <button class="auth-btn" type="button" onclick="clearBarangayFilter()">Clear</button>
                 </div>
                 <div class="grid" id="ypGrid">
                     <p>Loading YP Profiles...</p>
@@ -628,30 +686,52 @@
         </div>
     </div>
     
-    <!-- 2. SIGN UP / SETUP Modal (First-Time Admin Registration) -->
-    <div class="modal-overlay" id="setupModal">
+    <!-- NEW: SIGN UP Modal (General user sign up - does NOT grant admin rights) -->
+    <div class="modal-overlay" id="signupModal">
         <div class="modal">
             <div class="modal-header">
-                <h3>First-Time Admin Registration</h3>
-                <button class="close-modal" onclick="closeSetupModal()">&times;</button>
+                <h3>Sign Up</h3>
+                <button class="close-modal" onclick="closeSignupModal()">&times;</button>
             </div>
-            <form id="setupForm">
-                <p style="margin-bottom: 1rem; color: var(--text-muted);">
-                    Create the first administrator account (Sign Up). This user will have full access.
-                </p>
+            <form id="signupForm">
                 <div class="form-group">
-                    <label class="form-label">Admin Email</label>
-                    <input type="email" id="setupEmail" class="form-input" placeholder="admin@example.com" required>
+                    <label class="form-label">Email</label>
+                    <input type="email" id="signupEmail" class="form-input" placeholder="you@example.com" required>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Password</label>
-                    <input type="password" id="setupPassword" class="form-input" placeholder="********" required minlength="6">
+                    <input type="password" id="signupPassword" class="form-input" placeholder="********" required minlength="6">
                 </div>
-                <p id="setupError" style="color: var(--danger-color); font-size: 0.8rem; margin-bottom: 1rem; display: none;"></p>
-                <button type="submit" class="auth-btn success" style="width: 100%;" id="setupSubmitBtn">Create Admin & Login</button>
+                <p id="signupError" style="color: var(--danger-color); font-size: 0.8rem; margin-bottom: 1rem; display: none;"></p>
+                <button type="submit" class="auth-btn success" style="width: 100%" id="signupSubmitBtn">Create Account</button>
             </form>
         </div>
     </div>
+    
+    <!-- 2. SIGN UP / SETUP Modal (First-Time Admin Registration) -->
+    <div class="modal-overlay" id="adminSetupModal">
+         <div class="modal">
+             <div class="modal-header">
+                <h3>First-Time Admin Registration</h3>
+                <button class="close-modal" onclick="closeAdminSetupModal()">&times;</button>
+             </div>
+            <form id="adminSetupForm">
+                 <p style="margin-bottom: 1rem; color: var(--text-muted);">
+                     Create the first administrator account (Sign Up). This user will have full access.
+                 </p>
+                 <div class="form-group">
+                     <label class="form-label">Admin Email</label>
+                    <input type="email" id="setupEmail" class="form-input" placeholder="admin@example.com" required>
+                 </div>
+                 <div class="form-group">
+                     <label class="form-label">Password</label>
+                    <input type="password" id="setupPassword" class="form-input" placeholder="********" required minlength="6">
+                 </div>
+                 <p id="setupError" style="color: var(--danger-color); font-size: 0.8rem; margin-bottom: 1rem; display: none;"></p>
+                <button type="submit" class="auth-btn success" style="width: 100%;" id="setupSubmitBtn">Create Admin & Login</button>
+             </form>
+         </div>
+     </div>
 
     <script>
         const SUPABASE_URL = 'https://lwuxjarsdoibzsoqqhmq.supabase.co';
@@ -688,7 +768,8 @@
                 const adminYPsSection = document.getElementById('admin_yps');
                 if (adminYPsSection && !adminYPsSection.classList.contains('hidden')) {
                     // Search in YP admin section
-                    fetchYPs(e.target.value);
+                    const barangay = document.getElementById('barangayFilter') ? document.getElementById('barangayFilter').value : '';
+                    fetchYPs(e.target.value, barangay);
                 } else {
                     console.log("Search is currently only active in 'Manage YPs' section.");
                 }
@@ -758,7 +839,7 @@
                 isAdmin = true;
                 enableAdminMode();
                 closeLoginModal();
-                closeSetupModal();
+                closeAdminSetupModal();
             } else {
                 // Logged in user is NOT an admin.
                 console.warn("User is logged in but not an administrator. Signing out.");
@@ -1031,10 +1112,21 @@
         }
 
 
+        // Add helper to apply/clear barangay filter from the select
+        function applyBarangayFilter() {
+            const searchTerm = document.getElementById('searchInput').value;
+            const barangay = document.getElementById('barangayFilter').value;
+            fetchYPs(searchTerm, barangay);
+        }
+        function clearBarangayFilter() {
+            document.getElementById('barangayFilter').value = '';
+            applyBarangayFilter();
+        }
+
         // === YP PROFILES CRUD (Public Read for badge/list, Admin Write) ===
         
         // 1. Fetch YPs (Works for public count and admin search list)
-        async function fetchYPs(searchTerm = '') {
+        async function fetchYPs(searchTerm = '', barangayFilter = '') {
             const container = document.getElementById('ypGrid');
             const isYpAdminView = container && !container.classList.contains('hidden');
 
@@ -1055,7 +1147,11 @@
             if (searchTerm) {
                 query = query.ilike('name', `%${searchTerm.trim()}%`);
             }
-            
+            // Apply barangay filter if selected (exact match)
+            if (barangayFilter) {
+                query = query.eq('barangay', barangayFilter);
+            }
+
             const { data, error } = await query.order('name');
 
             if (error) {
@@ -1071,7 +1167,8 @@
                 // Only render the grid if it's the admin view
                 if (isYpAdminView) {
                     if (data.length === 0) {
-                         container.innerHTML = `<p style="color: var(--text-muted)">No Young People found matching "${searchTerm}".</p>`;
+                         const msg = barangayFilter ? `No Young People found in "${barangayFilter}".` : `No Young People found matching "${searchTerm}".`;
+                         container.innerHTML = `<p style="color: var(--text-muted)">${msg}</p>`;
                          return;
                     }
                     container.innerHTML = data.map(yp => `
@@ -1233,15 +1330,27 @@
         }
 
         // Setup/Sign Up Modal Handlers
-        function openSetupModal() { 
-            closeLoginModal(false); // Ensure login is closed
-            document.getElementById('setupModal').style.display = 'flex'; 
+        function openSignupModal() {
+            closeLoginModal(false);
+            document.getElementById('signupModal').style.display = 'flex';
         }
-        function closeSetupModal(reset = true) { 
-            document.getElementById('setupModal').style.display = 'none'; 
+        function closeSignupModal(reset = true) {
+            document.getElementById('signupModal').style.display = 'none';
+            if (reset) {
+                document.getElementById('signupError').style.display = 'none';
+                document.getElementById('signupForm').reset();
+            }
+        }
+
+        function openAdminSetupModal() {
+            closeLoginModal(false);
+            document.getElementById('adminSetupModal').style.display = 'flex';
+        }
+        function closeAdminSetupModal(reset = true) {
+            document.getElementById('adminSetupModal').style.display = 'none';
             if (reset) {
                 document.getElementById('setupError').style.display = 'none';
-                document.getElementById('setupForm').reset();
+                document.getElementById('adminSetupForm').reset();
             }
         }
 
@@ -1270,86 +1379,151 @@
             }
         });
 
-        // First-Time Admin Setup/Sign Up Submission
-        document.getElementById('setupForm').addEventListener('submit', async (e) => {
+        // Admin (first-time) setup submission
+        document.getElementById('adminSetupForm').addEventListener('submit', async (e) => {
+             e.preventDefault();
+             const email = document.getElementById('setupEmail').value;
+             const password = document.getElementById('setupPassword').value;
+             const btn = document.getElementById('setupSubmitBtn');
+             const setupErrorEl = document.getElementById('setupError');
+ 
+             btn.disabled = true;
+             btn.textContent = "Creating Account...";
+             setupErrorEl.style.display = 'none';
+             
+             try {
+                 // 1. Sign Up the new user
+                 const { data: authData, error: authError } = await sb.auth.signUp({ 
+                     email, 
+                     password 
+                 });
+ 
+                 if (authError) throw authError;
+ 
+                 // Supabase may require email confirmation; if authData.user is not present immediately,
+                 // do not attempt to insert admin_users or auto-login. Instead, show a message.
+                 const newUser = authData.user || null;
+                 if (!newUser) {
+                     // Sign-up accepted but confirmation required (email sent)
+                     setupErrorEl.textContent = "Account created. Please check your email to confirm the account before logging in.";
+                     setupErrorEl.style.color = "var(--text-main)";
+                     setupErrorEl.style.display = 'block';
+                     btn.disabled = false;
+                     btn.textContent = "Create Admin & Login";
+                     // Show setup button so user can retry later
+                     document.getElementById('adminSetupBtn').classList.remove('hidden');
+                     return;
+                 }
+ 
+                 // 2. Grant admin rights in the custom table
+                 const { error: adminError } = await sb
+                     .from('admin_users')
+                     .insert({ id: newUser.id, email: newUser.email, is_admin: true });
+ 
+                 if (adminError) {
+                     console.error("Failed to mark user as admin in DB:", adminError);
+                     throw new Error("Account created, but failed to grant admin access. Check your database structure.");
+                 }
+ 
+                 showUserMessage("Admin account successfully created and logged in!", 'success');
+                 handleUserLogin(newUser);
+                 initializeAuthAndUI(); // Re-initialize UI state
+ 
+             } catch (err) {
+                 // err is the caught exception; show it in the setupErrorEl
+                 setupErrorEl.textContent = err.message || "An unknown error occurred during setup.";
+                 setupErrorEl.style.display = 'block';
+                 btn.disabled = false;
+                 btn.textContent = "Create Admin & Login";
+                 // Ensure correct button is shown if setup failed
+                 document.getElementById('adminSetupBtn').classList.remove('hidden');
+             }
+         });
+        // ---------------------
+        // General Sign Up (non-admin) submission
+        // ---------------------
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('setupEmail').value;
-            const password = document.getElementById('setupPassword').value;
-            const btn = document.getElementById('setupSubmitBtn');
-            const setupErrorEl = document.getElementById('setupError');
+            const email = document.getElementById('signupEmail').value;
+        const password = document.getElementById('signupPassword').value;
+            const btn = document.getElementById('signupSubmitBtn');
+            const errEl = document.getElementById('signupError');
 
             btn.disabled = true;
             btn.textContent = "Creating Account...";
-            setupErrorEl.style.display = 'none';
-            
-            try {
-                // 1. Sign Up the new user
-                const { data: authData, error: authError } = await sb.auth.signUp({ 
-                    email, 
-                    password 
-                });
+            errEl.style.display = 'none';
 
+            try {
+                const { data: authData, error: authError } = await sb.auth.signUp({ email, password });
                 if (authError) throw authError;
 
-                // Supabase may require email confirmation; if authData.user is not present immediately,
-                // do not attempt to insert admin_users or auto-login. Instead, show a message.
-                const newUser = authData.user || null;
-                if (!newUser) {
-                    // Sign-up accepted but confirmation required (email sent)
-                    setupErrorEl.textContent = "Account created. Please check your email to confirm the account before logging in.";
-                    setupErrorEl.style.color = "var(--text-main)";
-                    setupErrorEl.style.display = 'block';
-                    btn.disabled = false;
-                    btn.textContent = "Create Admin & Login";
-                    // Show setup button so user can retry later
-                    document.getElementById('adminSetupBtn').classList.remove('hidden');
-                    return;
+                // Most setups will require email confirmation — do NOT auto-insert in admin_users.
+                if (!authData.user) {
+                    errEl.textContent = "Account created. Please check your email to confirm before signing in.";
+                    errEl.style.color = "var(--text-main)";
+                    errEl.style.display = 'block';
+                } else {
+                    showUserMessage("Account created. You are now signed in.", 'success');
+                    // Do not grant admin rights — normal user
+                    // Optionally: handleUserLogin(authData.user) — depends on your desired flow
                 }
-
-                // 2. Grant admin rights in the custom table
-                const { error: adminError } = await sb
-                    .from('admin_users')
-                    .insert({ id: newUser.id, email: newUser.email, is_admin: true });
-
-                if (adminError) {
-                    console.error("Failed to mark user as admin in DB:", adminError);
-                    throw new Error("Account created, but failed to grant admin access. Check your database structure.");
-                }
-
-                showUserMessage("Admin account successfully created and logged in!", 'success');
-                handleUserLogin(newUser);
-                initializeAuthAndUI(); // Re-initialize UI state
-
+                document.getElementById('signupForm').reset();
+                closeSignupModal();
             } catch (err) {
-                // err is the caught exception; show it in the setupErrorEl
-                setupErrorEl.textContent = err.message || "An unknown error occurred during setup.";
-                setupErrorEl.style.display = 'block';
+                errEl.textContent = err.message || "Sign up failed.";
+                errEl.style.display = 'block';
+            } finally {
                 btn.disabled = false;
-                btn.textContent = "Create Admin & Login";
-                // Ensure correct button is shown if setup failed
-                document.getElementById('adminSetupBtn').classList.remove('hidden');
+                btn.textContent = "Create Account";
             }
         });
-
-        // Simple Message Box implementation (replaces alert/confirm)
-        function showUserMessage(message, type = 'info') {
-             // IMPORTANT: In a production environment, implement a custom modal or toast notification.
-            if (type === 'danger') {
-                 alert(`Error: ${message}`);
-            } else {
-                 alert(`Success: ${message}`);
+ 
+         // Simple Message Box implementation (replaces alert/confirm)
+         function showUserMessage(message, type = 'info') {
+              // IMPORTANT: In a production environment, implement a custom modal or toast notification.
+             if (type === 'danger') {
+                  alert(`Error: ${message}`);
+             } else {
+                  alert(`Success: ${message}`);
+             }
+         }
+         
+         function showConfirmation(message) {
+             // IMPORTANT: In a production environment, implement a custom modal instead of standard confirm.
+             return confirm(message);
+         }
+ 
+       // ---------------------
+       // Signup & Admin-Setup modal helpers
+        // ---------------------
+        function openSignupModal() {
+            closeLoginModal(false);
+            document.getElementById('signupModal').style.display = 'flex';
+        }
+        function closeSignupModal(reset = true) {
+            document.getElementById('signupModal').style.display = 'none';
+            if (reset) {
+                document.getElementById('signupError').style.display = 'none';
+                document.getElementById('signupForm').reset();
             }
         }
-        
-        function showConfirmation(message) {
-            // IMPORTANT: In a production environment, implement a custom modal instead of standard confirm.
-            return confirm(message);
+
+        function openAdminSetupModal() {
+            closeLoginModal(false);
+            document.getElementById('adminSetupModal').style.display = 'flex';
+        }
+        function closeAdminSetupModal(reset = true) {
+            document.getElementById('adminSetupModal').style.display = 'none';
+            if (reset) {
+                document.getElementById('setupError').style.display = 'none';
+                document.getElementById('adminSetupForm').reset();
+            }
         }
 
-
-        window.onclick = function(event) {
+         window.onclick = function(event) {
             if (event.target == document.getElementById('loginModal')) closeLoginModal();
-            if (event.target == document.getElementById('setupModal')) closeSetupModal();
+            if (event.target == document.getElementById('signupModal')) closeSignupModal();
+            if (event.target == document.getElementById('adminSetupModal')) closeAdminSetupModal();
         }
     </script>
 </body>
