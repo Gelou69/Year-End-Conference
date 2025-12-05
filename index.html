@@ -1,1227 +1,1227 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YP Conference Portal</title>
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Supabase JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <style>
-        /* == CLEAN LIGHT THEME VARIABLES == */
-        :root {
-            --bg-body: #f3f4f6;          /* Very light gray for background */
-            --bg-sidebar: #ffffff;       /* Pure white sidebar */
-            --bg-card: #ffffff;          /* Pure white cards */
-            
-            --text-main: #1f2937;        /* Dark gray/Almost black */
-            --text-muted: #6b7280;       /* Medium gray */
-            
-            --primary-color: #2563eb;    /* Royal Blue */
-            --primary-gradient: linear-gradient(135deg, #2563eb, #1d4ed8);
-            --primary-hover: #1e40af;
-            
-            --border-color: #e5e7eb;     /* Light gray border */
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            
-            --danger-color: #ef4444;
-            --success-color: #10b981;
-            
-            --sidebar-width: 260px;
-            --header-height: 70px;
-            --radius: 12px;
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>YP Conference Portal</title>
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+<link rel="icon" type="image/png" href="LOGO.png">
+<link rel="apple-touch-icon" href="LOGO.png">
+<link rel="manifest" href="manifest.json">
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            height: 100vh;
-            display: flex;
-            overflow: hidden;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-        /* == ANIMATIONS == */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
-
-        /* == SIDEBAR == */
-        .sidebar {
-            width: var(--sidebar-width);
-            background-color: var(--bg-sidebar);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            height: 100%;
-            z-index: 100;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .sidebar-header {
-            height: var(--header-height);
-            display: flex;
-            align-items: center;
-            padding: 0 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            letter-spacing: 0.5px;
-        }
-        
-        .logo-icon {
-            width: 35px; height: 35px;
-            background: var(--primary-gradient);
-            color: white; border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            margin-right: 10px; font-size: 1rem;
-        }
-
-        .sidebar-menu { flex-grow: 1; padding: 1.5rem 1rem; overflow-y: auto; }
-
-        .nav-item {
-            display: flex; align-items: center;
-            padding: 0.85rem 1rem; margin-bottom: 0.5rem;
-            color: var(--text-muted); text-decoration: none;
-            border-radius: var(--radius);
-            transition: all 0.2s ease;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        .nav-item:hover {
-            background-color: #f3f4f6;
-            color: var(--text-main);
-        }
-
-        .nav-item.active {
-            background: var(--primary-gradient);
-            color: white;
-            box-shadow: var(--shadow-md);
-        }
-
-        .nav-item i { width: 24px; margin-right: 10px; text-align: center; }
-
-        .sidebar-footer { padding: 1.5rem; border-top: 1px solid var(--border-color); background-color: #f9fafb; }
-
-        /* == MAIN CONTENT == */
-        .main-wrapper {
-            flex-grow: 1;
-            margin-left: var(--sidebar-width);
-            display: flex; flex-direction: column;
-            height: 100vh;
-            transition: margin-left 0.3s ease;
-        }
-
-        .top-header {
-            height: var(--header-height);
-            background-color: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border-color);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 2rem;
-            position: sticky; top: 0; z-index: 50;
-        }
-
-        .header-title { font-size: 1.4rem; font-weight: 600; color: var(--text-main); }
-
-        .search-box { position: relative; margin-left: auto; margin-right: 20px; }
-        .search-box input {
-            background-color: #f3f4f6;
-            border: 1px solid transparent;
-            color: var(--text-main);
-            padding: 0.6rem 1rem 0.6rem 2.5rem;
-            border-radius: 30px;
-            width: 240px;
-            transition: all 0.3s ease;
-        }
-        .search-box input:focus { 
-            outline: none; background-color: white; 
-            border-color: var(--primary-color); 
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-        .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; }
-
-        /* Buttons */
-        .btn {
-            padding: 0.6rem 1.2rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.2s;
-            border: 1px solid transparent;
-            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        
-        .btn-primary {
-            background: var(--primary-gradient);
-            color: white;
-            box-shadow: var(--shadow-sm);
-        }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); opacity: 0.95; }
-        
-        .btn-outline {
-            background: white; border: 1px solid var(--border-color); color: var(--text-main);
-        }
-        .btn-outline:hover { border-color: var(--text-muted); background-color: #f9fafb; }
-        
-        .btn-danger { color: var(--danger-color); background: #fef2f2; border: 1px solid #fee2e2; }
-        .btn-danger:hover { background: #fee2e2; }
-        
-        .btn-success { background: var(--success-color); color: white; }
-
-        /* Content */
-        .content-container { flex-grow: 1; overflow-y: auto; padding: 2rem; background-color: #f8fafc; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
-
-        /* Cards */
-        .card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.3s ease;
-            position: relative; overflow: hidden;
-        }
-        .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
-        
-        .card h3 { margin-bottom: 0.5rem; color: var(--text-main); font-weight: 600; }
-        .card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1rem; }
-        
-        .card-image {
-            width: 100%; height: 180px; object-fit: cover;
-            border-radius: 8px; margin-bottom: 1rem;
-            background-color: #e5e7eb;
-        }
-
-        /* Forms */
-        .form-group { margin-bottom: 1.2rem; }
-        .form-label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-main); font-weight: 500; }
-        .form-input {
-            width: 100%; background-color: white; border: 1px solid var(--border-color);
-            color: var(--text-main); padding: 0.8rem; border-radius: 8px; font-family: inherit;
-            transition: border-color 0.2s;
-        }
-        .form-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-
-        /* Modals */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
-            z-index: 1000; display: none; justify-content: center; align-items: center;
-        }
-        .modal {
-            background-color: white; width: 100%; max-width: 450px;
-            padding: 2rem; border-radius: 16px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            animation: fadeIn 0.3s ease;
-        }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        .modal-header h3 { font-size: 1.5rem; color: var(--text-main); }
-        .close-modal { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
-
-        /* Dashboard Specifics */
-        .dashboard-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
-        
-        .hero-card {
-            background: white;
-            border: 1px solid var(--border-color);
-            position: relative;
-        }
-        .hero-card .new-badge {
-            position: absolute; top: 1rem; right: 1rem;
-            background-color: var(--primary-color); color: white;
-            padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
-        }
-
-        .schedule-list-item {
-            display: flex; gap: 1rem; padding: 1rem 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .schedule-list-item:last-child { border-bottom: none; }
-        .schedule-time { color: var(--primary-color); font-weight: 600; min-width: 60px; }
-
-        .badge { background-color: var(--primary-color); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; margin-left: auto; }
-        .hidden { display: none !important; }
-        .admin-controls { display: flex; gap: 10px; margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 10px; }
-        
-        .menu-toggle { display: none; font-size: 1.5rem; color: var(--text-main); background: none; border: none; cursor: pointer; margin-right: 1rem; }
-
-        @media (max-width: 900px) { .dashboard-layout { grid-template-columns: 1fr; } }
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); box-shadow: none; }
-            .sidebar.active { transform: translateX(0); box-shadow: 10px 0 50px rgba(0,0,0,0.1); }
-            .main-wrapper { margin-left: 0; }
-            .menu-toggle { display: block; }
-            .top-header { padding: 0 1rem; }
-            .content-container { padding: 1rem; }
-        }
-        img {
-    width: 44px;
-}
-    </style>
-</head>
-<body>
-
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="logo-icon"><img src="LOGO.png" alt=""></i></div>
-           Church in Lakewood
-        </div>
-        
-        <div class="sidebar-menu">
-            <a href="#" class="nav-item active" onclick="showSection('dashboard', this)">
-                <i class="fas fa-home"></i> <span>Dashboard</span>
-            </a>
-            <a href="#" class="nav-item" onclick="showSection('schedule_full', this)">
-                <i class="fas fa-calendar-alt"></i> <span>Schedule</span>
-            </a>
-            <a href="#" class="nav-item" onclick="showSection('registration', this)">
-                <i class="fas fa-clipboard-list"></i> <span>Registration</span>
-            </a>
-            <a href="#" class="nav-item" onclick="showSection('settings', this)">
-                <i class="fas fa-cog"></i> <span>Settings</span>
-            </a>
-
-            <!-- Admin Menu Items (Protected) -->
-            <div id="adminLinks" class="hidden" style="margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
-                <p style="padding: 0 1rem; margin-bottom: 0.5rem; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Admin Zone</p>
-                <a href="#" class="nav-item" onclick="showSection('admin_yps', this)">
-                    <i class="fas fa-users"></i> <span>Manage YPs</span>
-                    <span class="badge" id="ypCountBadge">0</span>
-                </a>
-                <a href="#" class="nav-item" onclick="showSection('admin_announcements', this)">
-                    <i class="fas fa-bullhorn"></i> <span>Manage News</span>
-                </a>
-                <a href="#" class="nav-item" onclick="showSection('admin_schedule', this)">
-                    <i class="fas fa-clock"></i> <span>Manage Schedule</span>
-                </a>
-            </div>
-        </div>
-
-        <div class="sidebar-footer">
-            <div id="authControls">
-                <!-- Login Button (Visible when logged out) -->
-                <button id="loginBtn" class="btn btn-primary" style="width: 100%; margin-bottom: 8px;" onclick="openLoginModal()">
-                    <i class="fas fa-sign-in-alt"></i> Log In
-                </button>
-                <button id="signUpBtn" class="btn btn-outline" style="width: 100%;" onclick="openSignupModal()">
-                    Sign Up
-                </button>
-
-                <!-- Logout Button (Visible when logged in) -->
-                <div id="userStatus" class="hidden" style="margin-bottom: 10px; font-size: 0.85rem; color: var(--text-main); text-align: center;">
-                    Hello, <span id="userEmailDisplay" style="font-weight: 600;">User</span>
-                </div>
-                <button id="logoutBtn" class="btn btn-danger hidden" style="width: 100%;" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </button>
-            </div>
-            <!-- Hidden admin setup trigger -->
-            <button id="adminSetupBtn" class="btn btn-success hidden" style="width: 100%; margin-top: 10px;" onclick="openAdminSetupModal()">
-                Setup Admin
-            </button>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <div class="main-wrapper">
-        <header class="top-header">
-            <div style="display: flex; align-items: center;">
-                <button class="menu-toggle" onclick="toggleSidebar()">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1 class="header-title" id="pageTitle">Dashboard</h1>
-            </div>
-
-            <div style="display: flex; align-items: center;">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search..." id="searchInput">
-                </div>
-                <div style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); cursor: default; margin-left: 15px; color: var(--primary-color);">
-                    <i class="fas fa-user"></i>
-                </div>
-            </div>
-        </header>
-
-        <main class="content-container">
-
-            <!-- 1. DASHBOARD -->
-            <section id="dashboard" class="fade-in">
-                <div class="dashboard-layout">
-                    <!-- Latest News -->
-                    <div id="latestAnnouncementContainer">
-                        <div class="card hero-card" style="display: flex; align-items: center; justify-content: center; height: 200px;">
-                            <h3 style="color: var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Loading updates...</h3>
-                        </div>
-                    </div>
-
-                    <!-- Upcoming Schedule -->
-                    <div class="card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1rem;">
-                            <h3><i class="fas fa-stopwatch" style="color: var(--primary-color)"></i> Up Next</h3>
-                            <a href="#" onclick="showSection('schedule_full', document.querySelectorAll('.nav-item')[1])" style="font-size: 0.8rem; color: var(--primary-color); text-decoration: none; font-weight: 500;">See All</a>
-                        </div>
-                        <div id="quickScheduleList">
-                            <p style="color:var(--text-muted)">Loading...</p>
-                        </div>
-                    </div>
-                </div>
-
-                <h3 style="margin-bottom: 1rem; color: var(--text-main); border-left: 4px solid var(--primary-color); padding-left: 10px;">Archive</h3>
-                <div class="grid" id="olderAnnouncementsGrid"></div>
-            </section>
-
-            <!-- 2. FULL SCHEDULE -->
-            <section id="schedule_full" class="hidden fade-in">
-                <div class="card" style="margin-bottom: 2rem;">
-                   <div style="text-align: center; margin-bottom: 2rem;">
-                        <h2 style="font-size: 1.8rem; color: var(--primary-color); margin-bottom: 0.5rem;">Conference Itinerary</h2>
-                        <p style="color: var(--text-muted)">"Redeeming the time" - Eph 5:16</p>
-                   </div>
-                   <div id="fullScheduleList"></div>
-                </div>
-            </section>
-
-            <!-- 3. REGISTRATION -->
-            <section id="registration" class="hidden fade-in">
-                <div class="card" style="max-width: 600px; margin: 0 auto;">
-                    <h3 style="text-align: center; margin-bottom: 1.5rem;">Conference Registration</h3>
-                    <form id="regForm">
-                        <div class="form-group">
-                            <label class="form-label">Full Name</label>
-                            <input type="text" id="regName" class="form-input" required>
-                        </div>
-                        <div style="display: flex; gap: 1rem;">
-                            <div class="form-group" style="flex: 1;">
-                                <label class="form-label">Gender</label>
-                                <select id="regGender" class="form-input" required>
-                                    <option value="Brother">Brother</option>
-                                    <option value="Sister">Sister</option>
-                                </select>
-                            </div>
-                            <div class="form-group" style="flex: 1;">
-                                <label class="form-label">Age</label>
-                                <input type="number" id="regAge" class="form-input" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Barangay</label>
-                            <select id="regBarangay" class="form-input" required>
-                                <option value="">Select Barangay</option>
-                                <option>Church in Bagong Kahayag</option>
-                                <option>Church in Baking</option>
-                                <option>Church in Biswangan</option>
-                                <option>Church in Bululawan</option>
-                                <option>Church in Dagum</option>
-                                <option>Church in Gasa</option>
-                                <option>Church in Gatub</option>
-                                <option>Church in Lukuan</option>
-                                <option>Church in Matalang</option>
-                                <option>Church in Poblacion</option>
-                                <option>Church in Sapang Pinoles</option>
-                                <option>Church in Sebuguey</option>
-                                <option>Church in Tiwales</option>
-                                <option>Church in Tubod</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Profile Photo</label>
-                            <input type="file" id="regImage" class="form-input" accept="image/*">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Status/Year</label>
-                            <input type="text" id="regYear" class="form-input" placeholder="e.g. Grade 11">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Years in Church Life</label>
-                            <input type="text" id="regYearsChurch" class="form-input">
-                        </div>
-                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;" id="regSubmitBtn">Submit Registration</button>
-                    </form>
-                </div>
-            </section>
-
-            <!-- 4. SETTINGS -->
-            <section id="settings" class="hidden fade-in">
-                <div class="card" style="max-width: 600px;">
-                    <h3><i class="fas fa-cog"></i> Settings</h3>
-                    <div style="margin-top: 1rem;">
-                        <p>Theme: Clean Light (Active)</p>
-                        <p id="userRoleDisplay" style="margin-top: 10px; font-weight: 500;">Role: Guest</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 5. ADMIN: MANAGE YPS -->
-            <section id="admin_yps" class="hidden fade-in">
-                <div class="card" style="margin-bottom: 2rem;">
-                    <h3>Add / Edit YP Profile</h3>
-                    <form id="ypForm">
-                        <input type="hidden" id="ypEditId">
-                        <div class="form-group">
-                            <label class="form-label">Name</label>
-                            <input type="text" id="ypName" class="form-input" required>
-                        </div>
-                         <div class="form-group">
-                            <label class="form-label">Barangay</label>
-                            <select id="ypBarangay" class="form-input" required>
-                                <option value="">Select Barangay</option>
-                                <option>Church in Bagong Kahayag</option>
-                                <option>Church in Baking</option>
-                                <option>Church in Biswangan</option>
-                                <option>Church in Bululawan</option>
-                                <option>Church in Dagum</option>
-                                <option>Church in Gasa</option>
-                                <option>Church in Gatub</option>
-                                <option>Church in Lukuan</option>
-                                <option>Church in Matalang</option>
-                                <option>Church in Poblacion</option>
-                                <option>Church in Sapang Pinoles</option>
-                                <option>Church in Sebuguey</option>
-                                <option>Church in Tiwales</option>
-                                <option>Church in Tubod</option>
-                            </select>
-                        </div>
-                        <div style="display: flex; gap: 1rem;">
-                            <div class="form-group" style="flex: 1;">
-                                <label class="form-label">Gender</label>
-                                <select id="ypGender" class="form-input">
-                                    <option value="Brother">Brother</option>
-                                    <option value="Sister">Sister</option>
-                                </select>
-                            </div>
-                            <div class="form-group" style="flex: 1;">
-                                <label class="form-label">Status</label>
-                                <input type="text" id="ypStatus" class="form-input" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Photo</label>
-                            <input type="file" id="ypImage" class="form-input" accept="image/*">
-                        </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button type="submit" class="btn btn-primary" id="ypSaveBtn">Save Profile</button>
-                            <button type="button" class="btn btn-outline" id="ypCancelBtn" style="display: none;" onclick="resetYPForm()">Cancel</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h3>YP Directory</h3>
-                </div>
-                <div style="display:flex; gap:1rem; align-items:center; margin-bottom:1rem; flex-wrap: wrap;">
-                    <label class="form-label" style="margin:0;">Filter:</label>
-                    <select id="barangayFilter" class="form-input" style="width: auto;" onchange="applyBarangayFilter()">
-                        <option value="">Church in District</option>
-                        <option>Church in Bagong Kahayag</option>
-                        <option>Church in Baking</option>
-                        <option>Church in Biswangan</option>
-                        <option>Church in Bululawan</option>
-                        <option>Church in Dagum</option>
-                        <option>Church in Gasa</option>
-                        <option>Church in Gatub</option>
-                        <option>Church in Lukuan</option>
-                        <option>Church in Matalang</option>
-                        <option>Church in Poblacion</option>
-                        <option>Church in Sapang Pinoles</option>
-                        <option>Church in Sebuguey</option>
-                        <option>Church in Tiwales</option>
-                        <option>Church in Tubod</option>
-                    </select>
-                    <button class="btn btn-outline" type="button" onclick="clearBarangayFilter()">Clear</button>
-                </div>
-                <div class="grid" id="ypGrid"></div>
-            </section>
-
-             <!-- 6. ADMIN: MANAGE ANNOUNCEMENTS -->
-             <section id="admin_announcements" class="hidden fade-in">
-                <div class="card" style="margin-bottom: 2rem;">
-                    <h3 id="formTitle">Create Announcement</h3>
-                    <form id="announcementForm">
-                        <input type="hidden" id="editId">
-                        <div class="form-group">
-                            <label class="form-label">Title</label>
-                            <input type="text" id="annTitle" class="form-input" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Content</label>
-                            <textarea id="annContent" class="form-input" rows="3" required></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Picture</label>
-                            <input type="file" id="annImage" class="form-input" accept="image/*">
-                        </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button type="submit" class="btn btn-primary" id="saveBtn">Post</button>
-                            <button type="button" class="btn btn-outline" id="cancelBtn" style="display: none;" onclick="resetForm()">Cancel</button>
-                        </div>
-                    </form>
-                </div>
-                <h3>Active Announcements</h3>
-                <div class="grid" id="adminAnnouncementList"></div>
-            </section>
-
-            <!-- 7. ADMIN: MANAGE SCHEDULE -->
-            <section id="admin_schedule" class="hidden fade-in">
-                <div class="card" style="margin-bottom: 2rem;">
-                    <h3>Add Schedule Item</h3>
-                    <form id="scheduleForm">
-                        <div class="form-group">
-                            <label class="form-label">Event Title</label>
-                            <input type="text" id="schedTitle" class="form-input" required>
-                        </div>
-                        <div style="display: flex; gap: 1rem;">
-                            <div class="form-group" style="flex:1;">
-                                <label class="form-label">Time</label>
-                                <input type="time" id="schedTime" class="form-input" required>
-                            </div>
-                            <div class="form-group" style="flex:1;">
-                                <label class="form-label">Day</label>
-                                <select id="schedDay" class="form-input" required>
-                                    <option value="Friday">Friday</option>
-                                    <option value="Saturday">Saturday</option>
-                                    <option value="Sunday">Sunday</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Location</label>
-                            <input type="text" id="schedLocation" class="form-input">
-                        </div>
-                        <button type="submit" class="btn btn-primary" id="schedSaveBtn">Add to Schedule</button>
-                    </form>
-                </div>
-                <h3>Current Schedule</h3>
-                <div id="adminScheduleList" style="display: flex; flex-direction: column; gap: 10px;"></div>
-            </section>
-        </main>
-    </div>
-
-    <!-- Login Modal -->
-    <div class="modal-overlay" id="loginModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Log In</h3>
-                <button class="close-modal" onclick="closeLoginModal()">&times;</button>
-            </div>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label class="form-label">Email Address</label>
-                    <input type="email" id="email" class="form-input" required placeholder="you@example.com">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <input type="password" id="password" class="form-input" required placeholder="••••••••">
-                </div>
-                <p id="loginError" style="color: var(--danger-color); font-size: 0.85rem; margin-bottom: 1rem; display: none;"></p>
-                <button type="submit" class="btn btn-primary" style="width: 100%" id="loginSubmitBtn">Sign In</button>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Sign Up Modal -->
-    <div class="modal-overlay" id="signupModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Create Account</h3>
-                <button class="close-modal" onclick="closeSignupModal()">&times;</button>
-            </div>
-            <form id="signupForm">
-                <div class="form-group">
-                    <label class="form-label">Email Address</label>
-                    <input type="email" id="signupEmail" class="form-input" required placeholder="you@example.com">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Create Password</label>
-                    <input type="password" id="signupPassword" class="form-input" required minlength="6" placeholder="At least 6 characters">
-                </div>
-                <p id="signupError" style="color: var(--danger-color); font-size: 0.85rem; margin-bottom: 1rem; display: none;"></p>
-                <button type="submit" class="btn btn-primary" style="width: 100%" id="signupSubmitBtn">Sign Up</button>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Admin Setup Modal -->
-    <div class="modal-overlay" id="adminSetupModal">
-         <div class="modal">
-             <div class="modal-header">
-                <h3>Setup Administrator</h3>
-                <button class="close-modal" onclick="closeAdminSetupModal()">&times;</button>
-             </div>
-            <form id="adminSetupForm">
-                 <p style="margin-bottom: 1rem; color: var(--text-muted); font-size:0.9rem;">
-                     No admin found. Create the first admin account.
-                 </p>
-                 <div class="form-group">
-                     <label class="form-label">Email</label>
-                    <input type="email" id="setupEmail" class="form-input" required>
-                 </div>
-                 <div class="form-group">
-                     <label class="form-label">Password</label>
-                    <input type="password" id="setupPassword" class="form-input" required minlength="6">
-                 </div>
-                 <p id="setupError" style="color: var(--danger-color); font-size: 0.8rem; margin-bottom: 1rem; display: none;"></p>
-                <button type="submit" class="btn btn-success" style="width: 100%;" id="setupSubmitBtn">Create & Login</button>
-             </form>
-         </div>
-     </div>
-
-    <script>
-        const SUPABASE_URL = 'https://lwuxjarsdoibzsoqqhmq.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3dXhqYXJzZG9pYnpzb3FxaG1xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3NDU0NTgsImV4cCI6MjA4MDMyMTQ1OH0.Yf1sqFN-PwFAqMP6tqaKXE2kjvd0I0F_OxrFOANQqu4';
-        const BUCKET_NAME = 'yp-conference-images';
-      
-        const { createClient } = supabase;
-        const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // === STATE ===
-        let currentUser = null;
-        let isAdmin = false;
-
-        // === UTILITIES ===
-        let debounceTimer;
-        function debounce(func, delay) {
-            return function(...args) {
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => func.apply(this, args), delay);
-            };
-        }
-
-        // === INITIALIZATION ===
-        window.addEventListener('load', () => {
-            fetchAnnouncements();
-            fetchYPs(''); 
-            fetchSchedule();
-            initializeAuthAndUI();
-    
-            const searchInput = document.getElementById('searchInput');
-            searchInput.addEventListener('input', debounce((e) => {
-                const adminYPsSection = document.getElementById('admin_yps');
-                if (adminYPsSection && !adminYPsSection.classList.contains('hidden')) {
-                    const barangay = document.getElementById('barangayFilter') ? document.getElementById('barangayFilter').value : '';
-                    fetchYPs(e.target.value, barangay);
-                }
-            }, 300));
-        });
-
-        async function checkAdminExists() {
-            const { count, error } = await sb.from('admin_users').select('*', { count: 'exact', head: true });
-            if (error) return true;
-            return count > 0;
-        }
-
-        async function initializeAuthAndUI() {
-            const isAdminPresent = await checkAdminExists();
-            const adminSetupBtn = document.getElementById('adminSetupBtn');
-            const loginBtn = document.getElementById('loginBtn');
-            const logoutBtn = document.getElementById('logoutBtn');
-            const signUpBtn = document.getElementById('signUpBtn');
-            const userStatus = document.getElementById('userStatus');
-
-            // 1. First Time Setup Check
-            if (!isAdminPresent) {
-                adminSetupBtn.classList.remove('hidden');
-            } else {
-                adminSetupBtn.classList.add('hidden');
+        <style>
+            /* == CLEAN LIGHT THEME VARIABLES == */
+            :root {
+                --bg-body: #f3f4f6;          /* Very light gray for background */
+                --bg-sidebar: #ffffff;       /* Pure white sidebar */
+                --bg-card: #ffffff;          /* Pure white cards */
+                
+                --text-main: #1f2937;        /* Dark gray/Almost black */
+                --text-muted: #6b7280;       /* Medium gray */
+                
+                --primary-color: #2563eb;    /* Royal Blue */
+                --primary-gradient: linear-gradient(135deg, #2563eb, #1d4ed8);
+                --primary-hover: #1e40af;
+                
+                --border-color: #e5e7eb;     /* Light gray border */
+                --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+                --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                
+                --danger-color: #ef4444;
+                --success-color: #10b981;
+                
+                --sidebar-width: 260px;
+                --header-height: 70px;
+                --radius: 12px;
             }
 
-            // 2. Auth Session Check
-            const { data: { session } } = await sb.auth.getSession();
-            
-            if (session) {
-                // User is logged in
-                currentUser = session.user;
-                
-                // UI: Hide Login/Signup, Show Logout
-                loginBtn.classList.add('hidden');
-                signUpBtn.classList.add('hidden');
-                logoutBtn.classList.remove('hidden');
-                userStatus.classList.remove('hidden');
-                document.getElementById('userEmailDisplay').textContent = currentUser.email.split('@')[0];
+            * { margin: 0; padding: 0; box-sizing: border-box; }
 
-                // Check Admin Status
-                handleUserPermissions(currentUser);
-            } else {
-                // User is logged out
-                currentUser = null;
-                isAdmin = false;
-                
-                // UI: Show Login/Signup, Hide Logout
-                loginBtn.classList.remove('hidden');
-                signUpBtn.classList.remove('hidden');
-                logoutBtn.classList.add('hidden');
-                userStatus.classList.add('hidden');
-                
-                document.getElementById('adminLinks').classList.add('hidden');
-                document.getElementById('userRoleDisplay').textContent = "Role: Guest";
+            body {
+                font-family: 'Poppins', sans-serif;
+                background-color: var(--bg-body);
+                color: var(--text-main);
+                height: 100vh;
+                display: flex;
+                overflow: hidden;
             }
-        }
 
-        async function handleUserPermissions(user) {
-            const { data, error } = await sb.from('admin_users').select('is_admin').eq('id', user.id).single();
+            /* == ANIMATIONS == */
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .fade-in { animation: fadeIn 0.4s ease-out forwards; }
 
-            if (data && data.is_admin) {
-                isAdmin = true;
-                document.getElementById('adminLinks').classList.remove('hidden');
-                document.getElementById('userRoleDisplay').textContent = "Role: Administrator";
-                // Pre-load admin data
-                fetchAdminAnnouncements();
-                fetchYPs('');
+            /* == SIDEBAR == */
+            .sidebar {
+                width: var(--sidebar-width);
+                background-color: var(--bg-sidebar);
+                border-right: 1px solid var(--border-color);
+                display: flex;
+                flex-direction: column;
+                position: fixed;
+                height: 100%;
+                z-index: 100;
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: var(--shadow-sm);
+            }
+
+            .sidebar-header {
+                height: var(--header-height);
+                display: flex;
+                align-items: center;
+                padding: 0 1.5rem;
+                border-bottom: 1px solid var(--border-color);
+                font-size: 1.3rem;
+                font-weight: 700;
+                color: var(--primary-color);
+                letter-spacing: 0.5px;
+            }
+            
+            .logo-icon {
+                width: 35px; height: 35px;
+                background: var(--primary-gradient);
+                color: white; border-radius: 8px;
+                display: flex; align-items: center; justify-content: center;
+                margin-right: 10px; font-size: 1rem;
+            }
+
+            .sidebar-menu { flex-grow: 1; padding: 1.5rem 1rem; overflow-y: auto; }
+
+            .nav-item {
+                display: flex; align-items: center;
+                padding: 0.85rem 1rem; margin-bottom: 0.5rem;
+                color: var(--text-muted); text-decoration: none;
+                border-radius: var(--radius);
+                transition: all 0.2s ease;
+                cursor: pointer;
+                font-weight: 500;
+            }
+
+            .nav-item:hover {
+                background-color: #f3f4f6;
+                color: var(--text-main);
+            }
+
+            .nav-item.active {
+                background: var(--primary-gradient);
+                color: white;
+                box-shadow: var(--shadow-md);
+            }
+
+            .nav-item i { width: 24px; margin-right: 10px; text-align: center; }
+
+            .sidebar-footer { padding: 1.5rem; border-top: 1px solid var(--border-color); background-color: #f9fafb; }
+
+            /* == MAIN CONTENT == */
+            .main-wrapper {
+                flex-grow: 1;
+                margin-left: var(--sidebar-width);
+                display: flex; flex-direction: column;
+                height: 100vh;
+                transition: margin-left 0.3s ease;
+            }
+
+            .top-header {
+                height: var(--header-height);
+                background-color: rgba(255, 255, 255, 0.9);
+                backdrop-filter: blur(10px);
+                border-bottom: 1px solid var(--border-color);
+                display: flex; align-items: center; justify-content: space-between;
+                padding: 0 2rem;
+                position: sticky; top: 0; z-index: 50;
+            }
+
+            .header-title { font-size: 1.4rem; font-weight: 600; color: var(--text-main); }
+
+            .search-box { position: relative; margin-left: auto; margin-right: 20px; }
+            .search-box input {
+                background-color: #f3f4f6;
+                border: 1px solid transparent;
+                color: var(--text-main);
+                padding: 0.6rem 1rem 0.6rem 2.5rem;
+                border-radius: 30px;
+                width: 240px;
+                transition: all 0.3s ease;
+            }
+            .search-box input:focus { 
+                outline: none; background-color: white; 
+                border-color: var(--primary-color); 
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            }
+            .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; }
+
+            /* Buttons */
+            .btn {
+                padding: 0.6rem 1.2rem;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 0.9rem;
+                font-weight: 500;
+                transition: all 0.2s;
+                border: 1px solid transparent;
+                display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            }
+            
+            .btn-primary {
+                background: var(--primary-gradient);
+                color: white;
+                box-shadow: var(--shadow-sm);
+            }
+            .btn-primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); opacity: 0.95; }
+            
+            .btn-outline {
+                background: white; border: 1px solid var(--border-color); color: var(--text-main);
+            }
+            .btn-outline:hover { border-color: var(--text-muted); background-color: #f9fafb; }
+            
+            .btn-danger { color: var(--danger-color); background: #fef2f2; border: 1px solid #fee2e2; }
+            .btn-danger:hover { background: #fee2e2; }
+            
+            .btn-success { background: var(--success-color); color: white; }
+
+            /* Content */
+            .content-container { flex-grow: 1; overflow-y: auto; padding: 2rem; background-color: #f8fafc; }
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+
+            /* Cards */
+            .card {
+                background-color: var(--bg-card);
+                border: 1px solid var(--border-color);
+                border-radius: var(--radius);
+                padding: 1.5rem;
+                box-shadow: var(--shadow-sm);
+                transition: all 0.3s ease;
+                position: relative; overflow: hidden;
+            }
+            .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+            
+            .card h3 { margin-bottom: 0.5rem; color: var(--text-main); font-weight: 600; }
+            .card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1rem; }
+            
+            .card-image {
+                width: 100%; height: 180px; object-fit: cover;
+                border-radius: 8px; margin-bottom: 1rem;
+                background-color: #e5e7eb;
+            }
+
+            /* Forms */
+            .form-group { margin-bottom: 1.2rem; }
+            .form-label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-main); font-weight: 500; }
+            .form-input {
+                width: 100%; background-color: white; border: 1px solid var(--border-color);
+                color: var(--text-main); padding: 0.8rem; border-radius: 8px; font-family: inherit;
+                transition: border-color 0.2s;
+            }
+            .form-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+
+            /* Modals */
+            .modal-overlay {
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+                z-index: 1000; display: none; justify-content: center; align-items: center;
+            }
+            .modal {
+                background-color: white; width: 100%; max-width: 450px;
+                padding: 2rem; border-radius: 16px;
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                animation: fadeIn 0.3s ease;
+            }
+            .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+            .modal-header h3 { font-size: 1.5rem; color: var(--text-main); }
+            .close-modal { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+
+            /* Dashboard Specifics */
+            .dashboard-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+            
+            .hero-card {
+                background: white;
+                border: 1px solid var(--border-color);
+                position: relative;
+            }
+            .hero-card .new-badge {
+                position: absolute; top: 1rem; right: 1rem;
+                background-color: var(--primary-color); color: white;
+                padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+            }
+
+            .schedule-list-item {
+                display: flex; gap: 1rem; padding: 1rem 0;
+                border-bottom: 1px solid var(--border-color);
+            }
+            .schedule-list-item:last-child { border-bottom: none; }
+            .schedule-time { color: var(--primary-color); font-weight: 600; min-width: 60px; }
+
+            .badge { background-color: var(--primary-color); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; margin-left: auto; }
+            .hidden { display: none !important; }
+            .admin-controls { display: flex; gap: 10px; margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 10px; }
+            
+            .menu-toggle { display: none; font-size: 1.5rem; color: var(--text-main); background: none; border: none; cursor: pointer; margin-right: 1rem; }
+
+            @media (max-width: 900px) { .dashboard-layout { grid-template-columns: 1fr; } }
+            @media (max-width: 768px) {
+                .sidebar { transform: translateX(-100%); box-shadow: none; }
+                .sidebar.active { transform: translateX(0); box-shadow: 10px 0 50px rgba(0,0,0,0.1); }
+                .main-wrapper { margin-left: 0; }
+                .menu-toggle { display: block; }
+                .top-header { padding: 0 1rem; }
+                .content-container { padding: 1rem; }
+            }
+            img {
+        width: 44px;
+    }
+        </style>
+    </head>
+    <body>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon"><img src="LOGO.png" alt=""></i></div>
+            Church in Lakewood
+            </div>
+            
+            <div class="sidebar-menu">
+                <a href="#" class="nav-item active" onclick="showSection('dashboard', this)">
+                    <i class="fas fa-home"></i> <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('schedule_full', this)">
+                    <i class="fas fa-calendar-alt"></i> <span>Schedule</span>
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('registration', this)">
+                    <i class="fas fa-clipboard-list"></i> <span>Registration</span>
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('settings', this)">
+                    <i class="fas fa-cog"></i> <span>Settings</span>
+                </a>
+
+                <!-- Admin Menu Items (Protected) -->
+                <div id="adminLinks" class="hidden" style="margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                    <p style="padding: 0 1rem; margin-bottom: 0.5rem; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Admin Zone</p>
+                    <a href="#" class="nav-item" onclick="showSection('admin_yps', this)">
+                        <i class="fas fa-users"></i> <span>Manage YPs</span>
+                        <span class="badge" id="ypCountBadge">0</span>
+                    </a>
+                    <a href="#" class="nav-item" onclick="showSection('admin_announcements', this)">
+                        <i class="fas fa-bullhorn"></i> <span>Manage News</span>
+                    </a>
+                    <a href="#" class="nav-item" onclick="showSection('admin_schedule', this)">
+                        <i class="fas fa-clock"></i> <span>Manage Schedule</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div id="authControls">
+                    <!-- Login Button (Visible when logged out) -->
+                    <button id="loginBtn" class="btn btn-primary" style="width: 100%; margin-bottom: 8px;" onclick="openLoginModal()">
+                        <i class="fas fa-sign-in-alt"></i> Log In
+                    </button>
+                    <button id="signUpBtn" class="btn btn-outline" style="width: 100%;" onclick="openSignupModal()">
+                        Sign Up
+                    </button>
+
+                    <!-- Logout Button (Visible when logged in) -->
+                    <div id="userStatus" class="hidden" style="margin-bottom: 10px; font-size: 0.85rem; color: var(--text-main); text-align: center;">
+                        Hello, <span id="userEmailDisplay" style="font-weight: 600;">User</span>
+                    </div>
+                    <button id="logoutBtn" class="btn btn-danger hidden" style="width: 100%;" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+                <!-- Hidden admin setup trigger -->
+                <button id="adminSetupBtn" class="btn btn-success hidden" style="width: 100%; margin-top: 10px;" onclick="openAdminSetupModal()">
+                    Setup Admin
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-wrapper">
+            <header class="top-header">
+                <div style="display: flex; align-items: center;">
+                    <button class="menu-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="header-title" id="pageTitle">Dashboard</h1>
+                </div>
+
+                <div style="display: flex; align-items: center;">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search..." id="searchInput">
+                    </div>
+                    <div style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); cursor: default; margin-left: 15px; color: var(--primary-color);">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content-container">
+
+                <!-- 1. DASHBOARD -->
+                <section id="dashboard" class="fade-in">
+                    <div class="dashboard-layout">
+                        <!-- Latest News -->
+                        <div id="latestAnnouncementContainer">
+                            <div class="card hero-card" style="display: flex; align-items: center; justify-content: center; height: 200px;">
+                                <h3 style="color: var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Loading updates...</h3>
+                            </div>
+                        </div>
+
+                        <!-- Upcoming Schedule -->
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1rem;">
+                                <h3><i class="fas fa-stopwatch" style="color: var(--primary-color)"></i> Up Next</h3>
+                                <a href="#" onclick="showSection('schedule_full', document.querySelectorAll('.nav-item')[1])" style="font-size: 0.8rem; color: var(--primary-color); text-decoration: none; font-weight: 500;">See All</a>
+                            </div>
+                            <div id="quickScheduleList">
+                                <p style="color:var(--text-muted)">Loading...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 style="margin-bottom: 1rem; color: var(--text-main); border-left: 4px solid var(--primary-color); padding-left: 10px;">Archive</h3>
+                    <div class="grid" id="olderAnnouncementsGrid"></div>
+                </section>
+
+                <!-- 2. FULL SCHEDULE -->
+                <section id="schedule_full" class="hidden fade-in">
+                    <div class="card" style="margin-bottom: 2rem;">
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                            <h2 style="font-size: 1.8rem; color: var(--primary-color); margin-bottom: 0.5rem;">Conference Itinerary</h2>
+                            <p style="color: var(--text-muted)">"Redeeming the time" - Eph 5:16</p>
+                    </div>
+                    <div id="fullScheduleList"></div>
+                    </div>
+                </section>
+
+                <!-- 3. REGISTRATION -->
+                <section id="registration" class="hidden fade-in">
+                    <div class="card" style="max-width: 600px; margin: 0 auto;">
+                        <h3 style="text-align: center; margin-bottom: 1.5rem;">Conference Registration</h3>
+                        <form id="regForm">
+                            <div class="form-group">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" id="regName" class="form-input" required>
+                            </div>
+                            <div style="display: flex; gap: 1rem;">
+                                <div class="form-group" style="flex: 1;">
+                                    <label class="form-label">Gender</label>
+                                    <select id="regGender" class="form-input" required>
+                                        <option value="Brother">Brother</option>
+                                        <option value="Sister">Sister</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label class="form-label">Age</label>
+                                    <input type="number" id="regAge" class="form-input" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Barangay</label>
+                                <select id="regBarangay" class="form-input" required>
+                                    <option value="">Select Barangay</option>
+                                    <option>Church in Bagong Kahayag</option>
+                                    <option>Church in Baking</option>
+                                    <option>Church in Biswangan</option>
+                                    <option>Church in Bululawan</option>
+                                    <option>Church in Dagum</option>
+                                    <option>Church in Gasa</option>
+                                    <option>Church in Gatub</option>
+                                    <option>Church in Lukuan</option>
+                                    <option>Church in Matalang</option>
+                                    <option>Church in Poblacion</option>
+                                    <option>Church in Sapang Pinoles</option>
+                                    <option>Church in Sebuguey</option>
+                                    <option>Church in Tiwales</option>
+                                    <option>Church in Tubod</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Profile Photo</label>
+                                <input type="file" id="regImage" class="form-input" accept="image/*">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Status/Year</label>
+                                <input type="text" id="regYear" class="form-input" placeholder="e.g. Grade 11">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Years in Church Life</label>
+                                <input type="text" id="regYearsChurch" class="form-input">
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;" id="regSubmitBtn">Submit Registration</button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- 4. SETTINGS -->
+                <section id="settings" class="hidden fade-in">
+                    <div class="card" style="max-width: 600px;">
+                        <h3><i class="fas fa-cog"></i> Settings</h3>
+                        <div style="margin-top: 1rem;">
+                            <p>Theme: Clean Light (Active)</p>
+                            <p id="userRoleDisplay" style="margin-top: 10px; font-weight: 500;">Role: Guest</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. ADMIN: MANAGE YPS -->
+                <section id="admin_yps" class="hidden fade-in">
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <h3>Add / Edit YP Profile</h3>
+                        <form id="ypForm">
+                            <input type="hidden" id="ypEditId">
+                            <div class="form-group">
+                                <label class="form-label">Name</label>
+                                <input type="text" id="ypName" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Barangay</label>
+                                <select id="ypBarangay" class="form-input" required>
+                                    <option value="">Select Barangay</option>
+                                    <option>Church in Bagong Kahayag</option>
+                                    <option>Church in Baking</option>
+                                    <option>Church in Biswangan</option>
+                                    <option>Church in Bululawan</option>
+                                    <option>Church in Dagum</option>
+                                    <option>Church in Gasa</option>
+                                    <option>Church in Gatub</option>
+                                    <option>Church in Lukuan</option>
+                                    <option>Church in Matalang</option>
+                                    <option>Church in Poblacion</option>
+                                    <option>Church in Sapang Pinoles</option>
+                                    <option>Church in Sebuguey</option>
+                                    <option>Church in Tiwales</option>
+                                    <option>Church in Tubod</option>
+                                </select>
+                            </div>
+                            <div style="display: flex; gap: 1rem;">
+                                <div class="form-group" style="flex: 1;">
+                                    <label class="form-label">Gender</label>
+                                    <select id="ypGender" class="form-input">
+                                        <option value="Brother">Brother</option>
+                                        <option value="Sister">Sister</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label class="form-label">Status</label>
+                                    <input type="text" id="ypStatus" class="form-input" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Photo</label>
+                                <input type="file" id="ypImage" class="form-input" accept="image/*">
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button type="submit" class="btn btn-primary" id="ypSaveBtn">Save Profile</button>
+                                <button type="button" class="btn btn-outline" id="ypCancelBtn" style="display: none;" onclick="resetYPForm()">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>YP Directory</h3>
+                    </div>
+                    <div style="display:flex; gap:1rem; align-items:center; margin-bottom:1rem; flex-wrap: wrap;">
+                        <label class="form-label" style="margin:0;">Filter:</label>
+                        <select id="barangayFilter" class="form-input" style="width: auto;" onchange="applyBarangayFilter()">
+                            <option value="">Church in District</option>
+                            <option>Church in Bagong Kahayag</option>
+                            <option>Church in Baking</option>
+                            <option>Church in Biswangan</option>
+                            <option>Church in Bululawan</option>
+                            <option>Church in Dagum</option>
+                            <option>Church in Gasa</option>
+                            <option>Church in Gatub</option>
+                            <option>Church in Lukuan</option>
+                            <option>Church in Matalang</option>
+                            <option>Church in Poblacion</option>
+                            <option>Church in Sapang Pinoles</option>
+                            <option>Church in Sebuguey</option>
+                            <option>Church in Tiwales</option>
+                            <option>Church in Tubod</option>
+                        </select>
+                        <button class="btn btn-outline" type="button" onclick="clearBarangayFilter()">Clear</button>
+                    </div>
+                    <div class="grid" id="ypGrid"></div>
+                </section>
+
+                <!-- 6. ADMIN: MANAGE ANNOUNCEMENTS -->
+                <section id="admin_announcements" class="hidden fade-in">
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <h3 id="formTitle">Create Announcement</h3>
+                        <form id="announcementForm">
+                            <input type="hidden" id="editId">
+                            <div class="form-group">
+                                <label class="form-label">Title</label>
+                                <input type="text" id="annTitle" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Content</label>
+                                <textarea id="annContent" class="form-input" rows="3" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Picture</label>
+                                <input type="file" id="annImage" class="form-input" accept="image/*">
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button type="submit" class="btn btn-primary" id="saveBtn">Post</button>
+                                <button type="button" class="btn btn-outline" id="cancelBtn" style="display: none;" onclick="resetForm()">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                    <h3>Active Announcements</h3>
+                    <div class="grid" id="adminAnnouncementList"></div>
+                </section>
+
+                <!-- 7. ADMIN: MANAGE SCHEDULE -->
+                <section id="admin_schedule" class="hidden fade-in">
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <h3>Add Schedule Item</h3>
+                        <form id="scheduleForm">
+                            <div class="form-group">
+                                <label class="form-label">Event Title</label>
+                                <input type="text" id="schedTitle" class="form-input" required>
+                            </div>
+                            <div style="display: flex; gap: 1rem;">
+                                <div class="form-group" style="flex:1;">
+                                    <label class="form-label">Time</label>
+                                    <input type="time" id="schedTime" class="form-input" required>
+                                </div>
+                                <div class="form-group" style="flex:1;">
+                                    <label class="form-label">Day</label>
+                                    <select id="schedDay" class="form-input" required>
+                                        <option value="Friday">Friday</option>
+                                        <option value="Saturday">Saturday</option>
+                                        <option value="Sunday">Sunday</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Location</label>
+                                <input type="text" id="schedLocation" class="form-input">
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="schedSaveBtn">Add to Schedule</button>
+                        </form>
+                    </div>
+                    <h3>Current Schedule</h3>
+                    <div id="adminScheduleList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                </section>
+            </main>
+        </div>
+
+        <!-- Login Modal -->
+        <div class="modal-overlay" id="loginModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>Log In</h3>
+                    <button class="close-modal" onclick="closeLoginModal()">&times;</button>
+                </div>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" id="email" class="form-input" required placeholder="you@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="password" class="form-input" required placeholder="••••••••">
+                    </div>
+                    <p id="loginError" style="color: var(--danger-color); font-size: 0.85rem; margin-bottom: 1rem; display: none;"></p>
+                    <button type="submit" class="btn btn-primary" style="width: 100%" id="loginSubmitBtn">Sign In</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Sign Up Modal -->
+        <div class="modal-overlay" id="signupModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>Create Account</h3>
+                    <button class="close-modal" onclick="closeSignupModal()">&times;</button>
+                </div>
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" id="signupEmail" class="form-input" required placeholder="you@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Create Password</label>
+                        <input type="password" id="signupPassword" class="form-input" required minlength="6" placeholder="At least 6 characters">
+                    </div>
+                    <p id="signupError" style="color: var(--danger-color); font-size: 0.85rem; margin-bottom: 1rem; display: none;"></p>
+                    <button type="submit" class="btn btn-primary" style="width: 100%" id="signupSubmitBtn">Sign Up</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Admin Setup Modal -->
+        <div class="modal-overlay" id="adminSetupModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>Setup Administrator</h3>
+                    <button class="close-modal" onclick="closeAdminSetupModal()">&times;</button>
+                </div>
+                <form id="adminSetupForm">
+                    <p style="margin-bottom: 1rem; color: var(--text-muted); font-size:0.9rem;">
+                        No admin found. Create the first admin account.
+                    </p>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" id="setupEmail" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="setupPassword" class="form-input" required minlength="6">
+                    </div>
+                    <p id="setupError" style="color: var(--danger-color); font-size: 0.8rem; margin-bottom: 1rem; display: none;"></p>
+                    <button type="submit" class="btn btn-success" style="width: 100%;" id="setupSubmitBtn">Create & Login</button>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            const SUPABASE_URL = 'https://lwuxjarsdoibzsoqqhmq.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3dXhqYXJzZG9pYnpzb3FxaG1xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3NDU0NTgsImV4cCI6MjA4MDMyMTQ1OH0.Yf1sqFN-PwFAqMP6tqaKXE2kjvd0I0F_OxrFOANQqu4';
+            const BUCKET_NAME = 'yp-conference-images';
+        
+            const { createClient } = supabase;
+            const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            // === STATE ===
+            let currentUser = null;
+            let isAdmin = false;
+
+            // === UTILITIES ===
+            let debounceTimer;
+            function debounce(func, delay) {
+                return function(...args) {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(() => func.apply(this, args), delay);
+                };
+            }
+
+            // === INITIALIZATION ===
+            window.addEventListener('load', () => {
+                fetchAnnouncements();
+                fetchYPs(''); 
                 fetchSchedule();
-            } else {
-                isAdmin = false;
-                document.getElementById('adminLinks').classList.add('hidden');
-                document.getElementById('userRoleDisplay').textContent = "Role: User";
-            }
-        }
-
-        async function logout() {
-            await sb.auth.signOut();
-            window.location.reload();
-        }
-
-        // === UPLOAD HELPER ===
-        async function uploadImage(fileInputId) {
-            if (!isAdmin) throw new Error("Permission denied: Admin only.");
-            const fileInput = document.getElementById(fileInputId);
-            if (fileInput.files.length === 0) return null;
-
-            const file = fileInput.files[0];
-            const path = `uploads/${currentUser.id}/${Date.now()}-${file.name}`;
-            const { data: uploadData, error: uploadError } = await sb.storage.from(BUCKET_NAME).upload(path, file);
-            if (uploadError) throw uploadError;
-
-            const { data: publicUrlData } = sb.storage.from(BUCKET_NAME).getPublicUrl(path);
-            return publicUrlData.publicUrl;
-        }
-
-        // === SCHEDULE FEATURE ===
-        async function fetchSchedule() {
-            const { data, error } = await sb.from('schedule_items').select('*').order('time', { ascending: true });
-            
-            const quickContainer = document.getElementById('quickScheduleList');
-            const fullContainer = document.getElementById('fullScheduleList');
-            const adminContainer = document.getElementById('adminScheduleList');
-            
-            if (error || !data) {
-                quickContainer.innerHTML = `<p style="color:var(--text-muted)">No schedule found.</p>`;
-                return;
-            }
-
-            // Quick View
-            if (data.length === 0) {
-                quickContainer.innerHTML = `<p style="color:var(--text-muted)">No upcoming events.</p>`;
-            } else {
-                quickContainer.innerHTML = data.slice(0, 3).map(item => `
-                    <div class="schedule-list-item">
-                        <span class="schedule-time">${item.time}</span>
-                        <div>
-                            <h5 style="margin-bottom: 0.2rem; font-size: 0.95rem; color: var(--text-main); font-weight:600;">${item.title}</h5>
-                            <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">${item.location || ''} (${item.day})</p>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            // Full View
-            if (data.length === 0) {
-                fullContainer.innerHTML = `<p style="text-align:center; color: var(--text-muted);">Schedule to be announced.</p>`;
-            } else {
-                const days = ['Friday', 'Saturday', 'Sunday'];
-                let html = '';
-                days.forEach(day => {
-                    const dayItems = data.filter(i => i.day === day);
-                    if(dayItems.length > 0) {
-                        html += `
-                        <div style="margin-bottom: 2rem;">
-                            <h3 style="color: var(--primary-color); border-bottom: 1px solid var(--border-color); padding-bottom: 5px; margin-bottom: 1rem;">${day}</h3>
-                            <div style="display: grid; gap: 1rem;">
-                                ${dayItems.map(item => `
-                                    <div style="display: flex; gap: 1.5rem; align-items: flex-start; padding: 10px; background: white; border-radius: 8px; border: 1px solid var(--border-color);">
-                                        <span style="min-width: 70px; color: var(--text-main); font-weight: 700; font-size: 1.1rem; text-align:right;">${item.time}</span>
-                                        <div style="border-left: 2px solid var(--primary-color); padding-left: 15px;">
-                                            <h4 style="margin-bottom: 0.2rem; font-size: 1.1rem; color: var(--text-main);">${item.title}</h4>
-                                            <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);">${item.location || ''}</p>
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>`;
+                initializeAuthAndUI();
+        
+                const searchInput = document.getElementById('searchInput');
+                searchInput.addEventListener('input', debounce((e) => {
+                    const adminYPsSection = document.getElementById('admin_yps');
+                    if (adminYPsSection && !adminYPsSection.classList.contains('hidden')) {
+                        const barangay = document.getElementById('barangayFilter') ? document.getElementById('barangayFilter').value : '';
+                        fetchYPs(e.target.value, barangay);
                     }
-                });
-                fullContainer.innerHTML = html;
+                }, 300));
+            });
+
+            async function checkAdminExists() {
+                const { count, error } = await sb.from('admin_users').select('*', { count: 'exact', head: true });
+                if (error) return true;
+                return count > 0;
             }
 
-            // Admin List
-            if (isAdmin && adminContainer) {
-                 adminContainer.innerHTML = data.map(item => `
-                    <div class="card" style="padding: 1rem; display: flex; align-items: center; gap: 1rem; margin-bottom:0;">
-                        <div style="flex: 1;">
-                            <strong style="color: var(--primary-color);">${item.day} - ${item.time}</strong>
-                            <div style="color: var(--text-main);">${item.title}</div>
-                        </div>
-                        <button class="btn btn-danger" style="padding: 5px 10px; font-size:0.8rem;" onclick="deleteSchedule('${item.id}')"><i class="fas fa-trash"></i></button>
-                    </div>
-                 `).join('');
+            async function initializeAuthAndUI() {
+                const isAdminPresent = await checkAdminExists();
+                const adminSetupBtn = document.getElementById('adminSetupBtn');
+                const loginBtn = document.getElementById('loginBtn');
+                const logoutBtn = document.getElementById('logoutBtn');
+                const signUpBtn = document.getElementById('signUpBtn');
+                const userStatus = document.getElementById('userStatus');
+
+                // 1. First Time Setup Check
+                if (!isAdminPresent) {
+                    adminSetupBtn.classList.remove('hidden');
+                } else {
+                    adminSetupBtn.classList.add('hidden');
+                }
+
+                // 2. Auth Session Check
+                const { data: { session } } = await sb.auth.getSession();
+                
+                if (session) {
+                    // User is logged in
+                    currentUser = session.user;
+                    
+                    // UI: Hide Login/Signup, Show Logout
+                    loginBtn.classList.add('hidden');
+                    signUpBtn.classList.add('hidden');
+                    logoutBtn.classList.remove('hidden');
+                    userStatus.classList.remove('hidden');
+                    document.getElementById('userEmailDisplay').textContent = currentUser.email.split('@')[0];
+
+                    // Check Admin Status
+                    handleUserPermissions(currentUser);
+                } else {
+                    // User is logged out
+                    currentUser = null;
+                    isAdmin = false;
+                    
+                    // UI: Show Login/Signup, Hide Logout
+                    loginBtn.classList.remove('hidden');
+                    signUpBtn.classList.remove('hidden');
+                    logoutBtn.classList.add('hidden');
+                    userStatus.classList.add('hidden');
+                    
+                    document.getElementById('adminLinks').classList.add('hidden');
+                    document.getElementById('userRoleDisplay').textContent = "Role: Guest";
+                }
             }
-        }
 
-        document.getElementById('scheduleForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!isAdmin) return;
-            const btn = document.getElementById('schedSaveBtn');
-            btn.textContent = "Adding..."; btn.disabled = true;
+            async function handleUserPermissions(user) {
+                const { data, error } = await sb.from('admin_users').select('is_admin').eq('id', user.id).single();
 
-            const payload = {
-                title: document.getElementById('schedTitle').value,
-                time: document.getElementById('schedTime').value,
-                day: document.getElementById('schedDay').value,
-                location: document.getElementById('schedLocation').value
-            };
-
-            const { error } = await sb.from('schedule_items').insert([payload]);
-            if (error) alert("Error: " + error.message);
-            else {
-                alert("Added to schedule.");
-                document.getElementById('scheduleForm').reset();
-                fetchSchedule();
+                if (data && data.is_admin) {
+                    isAdmin = true;
+                    document.getElementById('adminLinks').classList.remove('hidden');
+                    document.getElementById('userRoleDisplay').textContent = "Role: Administrator";
+                    // Pre-load admin data
+                    fetchAdminAnnouncements();
+                    fetchYPs('');
+                    fetchSchedule();
+                } else {
+                    isAdmin = false;
+                    document.getElementById('adminLinks').classList.add('hidden');
+                    document.getElementById('userRoleDisplay').textContent = "Role: User";
+                }
             }
-            btn.textContent = "Add to Schedule";
-            btn.disabled = false;
-        });
 
-        async function deleteSchedule(id) {
-            if(!isAdmin || !confirm("Remove this event?")) return;
-            await sb.from('schedule_items').delete().eq('id', id);
-            fetchSchedule();
-        }
+            async function logout() {
+                await sb.auth.signOut();
+                window.location.reload();
+            }
 
-        // === ANNOUNCEMENTS ===
-        async function fetchAnnouncements() {
-            const latestContainer = document.getElementById('latestAnnouncementContainer');
-            const olderGrid = document.getElementById('olderAnnouncementsGrid');
+            // === UPLOAD HELPER ===
+            async function uploadImage(fileInputId) {
+                if (!isAdmin) throw new Error("Permission denied: Admin only.");
+                const fileInput = document.getElementById(fileInputId);
+                if (fileInput.files.length === 0) return null;
 
-            sb.from('announcements').select('*').order('created_at', { ascending: false }).then(({ data, error }) => {
-                if (error || !data || data.length === 0) {
-                    latestContainer.innerHTML = `<div class="card hero-card"><p style="color: var(--text-muted); padding:1rem; text-align:center;">No announcements yet.</p></div>`;
-                    olderGrid.innerHTML = '';
+                const file = fileInput.files[0];
+                const path = `uploads/${currentUser.id}/${Date.now()}-${file.name}`;
+                const { data: uploadData, error: uploadError } = await sb.storage.from(BUCKET_NAME).upload(path, file);
+                if (uploadError) throw uploadError;
+
+                const { data: publicUrlData } = sb.storage.from(BUCKET_NAME).getPublicUrl(path);
+                return publicUrlData.publicUrl;
+            }
+
+            // === SCHEDULE FEATURE ===
+            async function fetchSchedule() {
+                const { data, error } = await sb.from('schedule_items').select('*').order('time', { ascending: true });
+                
+                const quickContainer = document.getElementById('quickScheduleList');
+                const fullContainer = document.getElementById('fullScheduleList');
+                const adminContainer = document.getElementById('adminScheduleList');
+                
+                if (error || !data) {
+                    quickContainer.innerHTML = `<p style="color:var(--text-muted)">No schedule found.</p>`;
                     return;
                 }
 
-                const latest = data[0];
-                latestContainer.innerHTML = `
-                    <div class="card hero-card fade-in">
-                        <span class="new-badge">NEW</span>
-                        ${latest.pic_url ? `<img src="${latest.pic_url}" class="card-image" style="height: 250px;" alt="News">` : ''}
-                        <h2 style="font-size: 1.6rem; margin-bottom: 0.5rem; color: var(--text-main);">${latest.title}</h2>
-                        <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 1rem;">${latest.content}</p>
-                        <span style="font-size: 0.8rem; color: var(--primary-color); font-weight:600;">Posted on ${new Date(latest.created_at).toLocaleDateString()}</span>
-                    </div>`;
-
-                const older = data.slice(1);
-                if (older.length > 0) {
-                    olderGrid.innerHTML = older.map(item => `
-                        <div class="card fade-in">
-                            ${item.pic_url ? `<img src="${item.pic_url}" class="card-image" alt="Image">` : ''}
-                            <h3>${item.title}</h3>
-                            <p>${item.content}</p>
-                            <span style="font-size: 0.8rem; color: var(--primary-color);">${new Date(item.created_at).toLocaleDateString()}</span>
-                        </div>
-                    `).join('');
+                // Quick View
+                if (data.length === 0) {
+                    quickContainer.innerHTML = `<p style="color:var(--text-muted)">No upcoming events.</p>`;
                 } else {
-                    olderGrid.innerHTML = `<p style="color: var(--text-muted);">No archived news.</p>`;
-                }
-            });
-        }
-
-        async function fetchAdminAnnouncements() {
-            if (!isAdmin) return;
-            const container = document.getElementById('adminAnnouncementList');
-            const { data } = await sb.from('announcements').select('*').order('created_at', { ascending: false });
-            if (data) {
-                container.innerHTML = data.map(item => `
-                    <div class="card">
-                        ${item.pic_url ? `<img src="${item.pic_url}" class="card-image" style="height:100px;">` : ''}
-                        <h3>${item.title}</h3>
-                        <div class="admin-controls">
-                            <button class="btn btn-danger" style="padding: 5px 10px; font-size:0.8rem;" onclick="deleteAnnouncement('${item.id}')">Delete</button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        }
-
-        document.getElementById('announcementForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!isAdmin) return;
-            const btn = document.getElementById('saveBtn');
-            btn.textContent = "Posting..."; btn.disabled = true;
-            
-            try {
-                let pic_url = undefined;
-                if(document.getElementById('annImage').files.length > 0) {
-                    pic_url = await uploadImage('annImage');
-                }
-                const payload = { 
-                    title: document.getElementById('annTitle').value, 
-                    content: document.getElementById('annContent').value 
-                };
-                if (pic_url) payload.pic_url = pic_url;
-                
-                await sb.from('announcements').insert([payload]);
-                alert("Announcement posted.");
-                document.getElementById('announcementForm').reset();
-                fetchAdminAnnouncements(); fetchAnnouncements();
-            } catch (err) {
-                alert('Error: ' + err.message);
-            } finally {
-                btn.textContent = "Post"; btn.disabled = false;
-            }
-        });
-
-        async function deleteAnnouncement(id) {
-            if (!isAdmin || !confirm("Delete this?")) return;
-            await sb.from('announcements').delete().eq('id', id);
-            fetchAdminAnnouncements(); fetchAnnouncements();
-        }
-
-        // === YP PROFILES ===
-        function applyBarangayFilter() { fetchYPs(document.getElementById('searchInput').value, document.getElementById('barangayFilter').value); }
-        function clearBarangayFilter() { document.getElementById('barangayFilter').value = ''; applyBarangayFilter(); }
-
-        async function fetchYPs(searchTerm = '', barangayFilter = '') {
-            const container = document.getElementById('ypGrid');
-            const isYpAdminView = container && !container.classList.contains('hidden');
-            
-            if (isYpAdminView && !isAdmin) {
-                 container.innerHTML = `<p style="color: var(--danger-color)">Admin access required.</p>`;
-                 return;
-            }
-
-            let query = sb.from('yp_profiles').select('*');
-            if (searchTerm) query = query.ilike('name', `%${searchTerm.trim()}%`);
-            if (barangayFilter) query = query.eq('barangay', barangayFilter);
-
-            const { data, error } = await query.order('name');
-            if (error) return;
-
-            if (data) {
-                document.getElementById('ypCountBadge').textContent = data.length;
-                if (isYpAdminView) {
-                    if (data.length === 0) {
-                         container.innerHTML = `<p style="color: var(--text-muted)">No profiles found.</p>`;
-                         return;
-                    }
-                    container.innerHTML = data.map(yp => `
-                        <div class="card" style="display: flex; align-items: center; gap: 1rem; padding: 1.2rem;">
-                            <img src="${yp.pic_url || 'https://placehold.co/50x50/2563eb/ffffff?text=YP'}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
-                            <div style="flex:1;">
-                                <h4 style="margin-bottom: 0;">${yp.name}</h4>
-                                <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">${yp.barangay}</p>
-                                <p style="margin: 0; font-size: 0.7rem; color: var(--primary-color);">${yp.status}</p>
-                            </div>
-                            <div style="display: flex; gap: 5px;">
-                                <button class="btn btn-outline" style="padding: 5px 10px;" onclick="editYP('${yp.id}')"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-danger" style="padding: 5px 10px;" onclick="deleteYP('${yp.id}')"><i class="fas fa-trash"></i></button>
+                    quickContainer.innerHTML = data.slice(0, 3).map(item => `
+                        <div class="schedule-list-item">
+                            <span class="schedule-time">${item.time}</span>
+                            <div>
+                                <h5 style="margin-bottom: 0.2rem; font-size: 0.95rem; color: var(--text-main); font-weight:600;">${item.title}</h5>
+                                <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">${item.location || ''} (${item.day})</p>
                             </div>
                         </div>
                     `).join('');
                 }
-            }
-        }
 
-        document.getElementById('ypForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!isAdmin) return;
-            const btn = document.getElementById('ypSaveBtn');
-            btn.textContent = "Saving..."; btn.disabled = true;
-            const id = document.getElementById('ypEditId').value;
-            
-            try {
-                let pic_url = undefined;
-                if(document.getElementById('ypImage').files.length > 0) pic_url = await uploadImage('ypImage');
+                // Full View
+                if (data.length === 0) {
+                    fullContainer.innerHTML = `<p style="text-align:center; color: var(--text-muted);">Schedule to be announced.</p>`;
+                } else {
+                    const days = ['Friday', 'Saturday', 'Sunday'];
+                    let html = '';
+                    days.forEach(day => {
+                        const dayItems = data.filter(i => i.day === day);
+                        if(dayItems.length > 0) {
+                            html += `
+                            <div style="margin-bottom: 2rem;">
+                                <h3 style="color: var(--primary-color); border-bottom: 1px solid var(--border-color); padding-bottom: 5px; margin-bottom: 1rem;">${day}</h3>
+                                <div style="display: grid; gap: 1rem;">
+                                    ${dayItems.map(item => `
+                                        <div style="display: flex; gap: 1.5rem; align-items: flex-start; padding: 10px; background: white; border-radius: 8px; border: 1px solid var(--border-color);">
+                                            <span style="min-width: 70px; color: var(--text-main); font-weight: 700; font-size: 1.1rem; text-align:right;">${item.time}</span>
+                                            <div style="border-left: 2px solid var(--primary-color); padding-left: 15px;">
+                                                <h4 style="margin-bottom: 0.2rem; font-size: 1.1rem; color: var(--text-main);">${item.title}</h4>
+                                                <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);">${item.location || ''}</p>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>`;
+                        }
+                    });
+                    fullContainer.innerHTML = html;
+                }
+
+                // Admin List
+                if (isAdmin && adminContainer) {
+                    adminContainer.innerHTML = data.map(item => `
+                        <div class="card" style="padding: 1rem; display: flex; align-items: center; gap: 1rem; margin-bottom:0;">
+                            <div style="flex: 1;">
+                                <strong style="color: var(--primary-color);">${item.day} - ${item.time}</strong>
+                                <div style="color: var(--text-main);">${item.title}</div>
+                            </div>
+                            <button class="btn btn-danger" style="padding: 5px 10px; font-size:0.8rem;" onclick="deleteSchedule('${item.id}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            document.getElementById('scheduleForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!isAdmin) return;
+                const btn = document.getElementById('schedSaveBtn');
+                btn.textContent = "Adding..."; btn.disabled = true;
 
                 const payload = {
-                    name: document.getElementById('ypName').value,
-                    barangay: document.getElementById('ypBarangay').value,
-                    gender: document.getElementById('ypGender').value,
-                    status: document.getElementById('ypStatus').value
+                    title: document.getElementById('schedTitle').value,
+                    time: document.getElementById('schedTime').value,
+                    day: document.getElementById('schedDay').value,
+                    location: document.getElementById('schedLocation').value
                 };
-                if (pic_url) payload.pic_url = pic_url;
 
-                if (id) await sb.from('yp_profiles').update(payload).eq('id', id);
-                else await sb.from('yp_profiles').insert([payload]);
+                const { error } = await sb.from('schedule_items').insert([payload]);
+                if (error) alert("Error: " + error.message);
+                else {
+                    alert("Added to schedule.");
+                    document.getElementById('scheduleForm').reset();
+                    fetchSchedule();
+                }
+                btn.textContent = "Add to Schedule";
+                btn.disabled = false;
+            });
 
-                alert("Profile Saved!");
+            async function deleteSchedule(id) {
+                if(!isAdmin || !confirm("Remove this event?")) return;
+                await sb.from('schedule_items').delete().eq('id', id);
+                fetchSchedule();
+            }
+
+            // === ANNOUNCEMENTS ===
+            async function fetchAnnouncements() {
+                const latestContainer = document.getElementById('latestAnnouncementContainer');
+                const olderGrid = document.getElementById('olderAnnouncementsGrid');
+
+                sb.from('announcements').select('*').order('created_at', { ascending: false }).then(({ data, error }) => {
+                    if (error || !data || data.length === 0) {
+                        latestContainer.innerHTML = `<div class="card hero-card"><p style="color: var(--text-muted); padding:1rem; text-align:center;">No announcements yet.</p></div>`;
+                        olderGrid.innerHTML = '';
+                        return;
+                    }
+
+                    const latest = data[0];
+                    latestContainer.innerHTML = `
+                        <div class="card hero-card fade-in">
+                            <span class="new-badge">NEW</span>
+                            ${latest.pic_url ? `<img src="${latest.pic_url}" class="card-image" style="height: 250px;" alt="News">` : ''}
+                            <h2 style="font-size: 1.6rem; margin-bottom: 0.5rem; color: var(--text-main);">${latest.title}</h2>
+                            <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 1rem;">${latest.content}</p>
+                            <span style="font-size: 0.8rem; color: var(--primary-color); font-weight:600;">Posted on ${new Date(latest.created_at).toLocaleDateString()}</span>
+                        </div>`;
+
+                    const older = data.slice(1);
+                    if (older.length > 0) {
+                        olderGrid.innerHTML = older.map(item => `
+                            <div class="card fade-in">
+                                ${item.pic_url ? `<img src="${item.pic_url}" class="card-image" alt="Image">` : ''}
+                                <h3>${item.title}</h3>
+                                <p>${item.content}</p>
+                                <span style="font-size: 0.8rem; color: var(--primary-color);">${new Date(item.created_at).toLocaleDateString()}</span>
+                            </div>
+                        `).join('');
+                    } else {
+                        olderGrid.innerHTML = `<p style="color: var(--text-muted);">No archived news.</p>`;
+                    }
+                });
+            }
+
+            async function fetchAdminAnnouncements() {
+                if (!isAdmin) return;
+                const container = document.getElementById('adminAnnouncementList');
+                const { data } = await sb.from('announcements').select('*').order('created_at', { ascending: false });
+                if (data) {
+                    container.innerHTML = data.map(item => `
+                        <div class="card">
+                            ${item.pic_url ? `<img src="${item.pic_url}" class="card-image" style="height:100px;">` : ''}
+                            <h3>${item.title}</h3>
+                            <div class="admin-controls">
+                                <button class="btn btn-danger" style="padding: 5px 10px; font-size:0.8rem;" onclick="deleteAnnouncement('${item.id}')">Delete</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            document.getElementById('announcementForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!isAdmin) return;
+                const btn = document.getElementById('saveBtn');
+                btn.textContent = "Posting..."; btn.disabled = true;
+                
+                try {
+                    let pic_url = undefined;
+                    if(document.getElementById('annImage').files.length > 0) {
+                        pic_url = await uploadImage('annImage');
+                    }
+                    const payload = { 
+                        title: document.getElementById('annTitle').value, 
+                        content: document.getElementById('annContent').value 
+                    };
+                    if (pic_url) payload.pic_url = pic_url;
+                    
+                    await sb.from('announcements').insert([payload]);
+                    alert("Announcement posted.");
+                    document.getElementById('announcementForm').reset();
+                    fetchAdminAnnouncements(); fetchAnnouncements();
+                } catch (err) {
+                    alert('Error: ' + err.message);
+                } finally {
+                    btn.textContent = "Post"; btn.disabled = false;
+                }
+            });
+
+            async function deleteAnnouncement(id) {
+                if (!isAdmin || !confirm("Delete this?")) return;
+                await sb.from('announcements').delete().eq('id', id);
+                fetchAdminAnnouncements(); fetchAnnouncements();
+            }
+
+            // === YP PROFILES ===
+            function applyBarangayFilter() { fetchYPs(document.getElementById('searchInput').value, document.getElementById('barangayFilter').value); }
+            function clearBarangayFilter() { document.getElementById('barangayFilter').value = ''; applyBarangayFilter(); }
+
+            async function fetchYPs(searchTerm = '', barangayFilter = '') {
+                const container = document.getElementById('ypGrid');
+                const isYpAdminView = container && !container.classList.contains('hidden');
+                
+                if (isYpAdminView && !isAdmin) {
+                    container.innerHTML = `<p style="color: var(--danger-color)">Admin access required.</p>`;
+                    return;
+                }
+
+                let query = sb.from('yp_profiles').select('*');
+                if (searchTerm) query = query.ilike('name', `%${searchTerm.trim()}%`);
+                if (barangayFilter) query = query.eq('barangay', barangayFilter);
+
+                const { data, error } = await query.order('name');
+                if (error) return;
+
+                if (data) {
+                    document.getElementById('ypCountBadge').textContent = data.length;
+                    if (isYpAdminView) {
+                        if (data.length === 0) {
+                            container.innerHTML = `<p style="color: var(--text-muted)">No profiles found.</p>`;
+                            return;
+                        }
+                        container.innerHTML = data.map(yp => `
+                            <div class="card" style="display: flex; align-items: center; gap: 1rem; padding: 1.2rem;">
+                                <img src="${yp.pic_url || 'https://placehold.co/50x50/2563eb/ffffff?text=YP'}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                                <div style="flex:1;">
+                                    <h4 style="margin-bottom: 0;">${yp.name}</h4>
+                                    <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">${yp.barangay}</p>
+                                    <p style="margin: 0; font-size: 0.7rem; color: var(--primary-color);">${yp.status}</p>
+                                </div>
+                                <div style="display: flex; gap: 5px;">
+                                    <button class="btn btn-outline" style="padding: 5px 10px;" onclick="editYP('${yp.id}')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-danger" style="padding: 5px 10px;" onclick="deleteYP('${yp.id}')"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+            }
+
+            document.getElementById('ypForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!isAdmin) return;
+                const btn = document.getElementById('ypSaveBtn');
+                btn.textContent = "Saving..."; btn.disabled = true;
+                const id = document.getElementById('ypEditId').value;
+                
+                try {
+                    let pic_url = undefined;
+                    if(document.getElementById('ypImage').files.length > 0) pic_url = await uploadImage('ypImage');
+
+                    const payload = {
+                        name: document.getElementById('ypName').value,
+                        barangay: document.getElementById('ypBarangay').value,
+                        gender: document.getElementById('ypGender').value,
+                        status: document.getElementById('ypStatus').value
+                    };
+                    if (pic_url) payload.pic_url = pic_url;
+
+                    if (id) await sb.from('yp_profiles').update(payload).eq('id', id);
+                    else await sb.from('yp_profiles').insert([payload]);
+
+                    alert("Profile Saved!");
+                    document.getElementById('ypForm').reset();
+                    document.getElementById('ypEditId').value = '';
+                    fetchYPs(document.getElementById('searchInput').value);
+                } catch (err) {
+                    alert("Error: " + err.message);
+                } finally {
+                    btn.textContent = "Save Profile"; btn.disabled = false;
+                }
+            });
+
+            async function editYP(id) {
+                if (!isAdmin) return;
+                const { data } = await sb.from('yp_profiles').select('*').eq('id', id).single();
+                if(data) {
+                    document.getElementById('ypEditId').value = data.id;
+                    document.getElementById('ypName').value = data.name;
+                    document.getElementById('ypBarangay').value = data.barangay;
+                    document.getElementById('ypGender').value = data.gender;
+                    document.getElementById('ypStatus').value = data.status;
+                    document.getElementById('ypSaveBtn').textContent = "Update";
+                    document.getElementById('ypCancelBtn').style.display = "inline-block";
+                    document.getElementById('admin_yps').scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+            async function deleteYP(id) {
+                if (isAdmin && confirm("Delete profile?")) {
+                    await sb.from('yp_profiles').delete().eq('id', id);
+                    fetchYPs();
+                }
+            }
+            function resetYPForm() {
                 document.getElementById('ypForm').reset();
                 document.getElementById('ypEditId').value = '';
-                fetchYPs(document.getElementById('searchInput').value);
-            } catch (err) {
-                alert("Error: " + err.message);
-            } finally {
-                btn.textContent = "Save Profile"; btn.disabled = false;
+                document.getElementById('ypSaveBtn').textContent = "Save Profile";
+                document.getElementById('ypCancelBtn').style.display = "none";
             }
-        });
 
-        async function editYP(id) {
-            if (!isAdmin) return;
-            const { data } = await sb.from('yp_profiles').select('*').eq('id', id).single();
-            if(data) {
-                document.getElementById('ypEditId').value = data.id;
-                document.getElementById('ypName').value = data.name;
-                document.getElementById('ypBarangay').value = data.barangay;
-                document.getElementById('ypGender').value = data.gender;
-                document.getElementById('ypStatus').value = data.status;
-                document.getElementById('ypSaveBtn').textContent = "Update";
-                document.getElementById('ypCancelBtn').style.display = "inline-block";
-                document.getElementById('admin_yps').scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-        async function deleteYP(id) {
-            if (isAdmin && confirm("Delete profile?")) {
-                await sb.from('yp_profiles').delete().eq('id', id);
-                fetchYPs();
-            }
-        }
-        function resetYPForm() {
-            document.getElementById('ypForm').reset();
-            document.getElementById('ypEditId').value = '';
-            document.getElementById('ypSaveBtn').textContent = "Save Profile";
-            document.getElementById('ypCancelBtn').style.display = "none";
-        }
-
-        // === REGISTRATION ===
-        document.getElementById('regForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('regSubmitBtn');
-            btn.textContent = "Sending..."; btn.disabled = true;
-            try {
-                let image_url = null;
-                const regImageInput = document.getElementById('regImage');
-                if (regImageInput.files.length > 0) {
-                    const file = regImageInput.files[0];
-                    const publicPath = `uploads/registrations/${Date.now()}-${file.name}`;
-                    await sb.storage.from(BUCKET_NAME).upload(publicPath, file);
-                    const { data } = sb.storage.from(BUCKET_NAME).getPublicUrl(publicPath);
-                    image_url = data.publicUrl;
+            // === REGISTRATION ===
+            document.getElementById('regForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('regSubmitBtn');
+                btn.textContent = "Sending..."; btn.disabled = true;
+                try {
+                    let image_url = null;
+                    const regImageInput = document.getElementById('regImage');
+                    if (regImageInput.files.length > 0) {
+                        const file = regImageInput.files[0];
+                        const publicPath = `uploads/registrations/${Date.now()}-${file.name}`;
+                        await sb.storage.from(BUCKET_NAME).upload(publicPath, file);
+                        const { data } = sb.storage.from(BUCKET_NAME).getPublicUrl(publicPath);
+                        image_url = data.publicUrl;
+                    }
+                    const payload = {
+                        name: document.getElementById('regName').value,
+                        gender: document.getElementById('regGender').value,
+                        age: parseInt(document.getElementById('regAge').value),
+                        year_level: document.getElementById('regYear').value,
+                        barangay: document.getElementById('regBarangay').value,
+                        years_in_church: document.getElementById('regYearsChurch').value,
+                        image_url: image_url
+                    };
+                    await sb.from('registrations').insert([payload]);
+                    alert("Registration Submitted!");
+                    document.getElementById('regForm').reset();
+                } catch (err) {
+                    alert("Error: " + err.message);
+                } finally {
+                    btn.textContent = "Submit Registration"; btn.disabled = false;
                 }
-                const payload = {
-                    name: document.getElementById('regName').value,
-                    gender: document.getElementById('regGender').value,
-                    age: parseInt(document.getElementById('regAge').value),
-                    year_level: document.getElementById('regYear').value,
-                    barangay: document.getElementById('regBarangay').value,
-                    years_in_church: document.getElementById('regYearsChurch').value,
-                    image_url: image_url
-                };
-                await sb.from('registrations').insert([payload]);
-                alert("Registration Submitted!");
-                document.getElementById('regForm').reset();
-            } catch (err) {
-                alert("Error: " + err.message);
-            } finally {
-                btn.textContent = "Submit Registration"; btn.disabled = false;
-            }
-        });
-
-        // === NAVIGATION ===
-        function showSection(sectionId, element) {
-            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
-            const target = document.getElementById(sectionId);
-            if(target) { target.classList.remove('hidden'); target.classList.add('fade-in'); }
-            
-            const titles = { 'dashboard': 'Dashboard', 'schedule_full': 'Full Schedule', 'registration': 'Registration', 'settings': 'Settings', 'admin_yps': 'Manage Profiles', 'admin_announcements': 'News Manager', 'admin_schedule': 'Schedule Manager' };
-            document.getElementById('pageTitle').textContent = titles[sectionId] || 'Portal';
-            
-            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-            if(element) element.classList.add('active');
-            
-            if (sectionId.startsWith('admin_') && !isAdmin) {
-                 alert("Admin access only.");
-                 showSection('dashboard', document.querySelector('.nav-item'));
-            }
-            if(window.innerWidth <= 768) toggleSidebar();
-        }
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
-
-        // === MODALS ===
-        function openLoginModal() { closeSignupModal(false); document.getElementById('loginModal').style.display = 'flex'; }
-        function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; document.getElementById('loginForm').reset(); }
-        
-        function openSignupModal() { closeLoginModal(false); document.getElementById('signupModal').style.display = 'flex'; }
-        function closeSignupModal(reset=true) { document.getElementById('signupModal').style.display = 'none'; if(reset) document.getElementById('signupForm').reset(); }
-        
-        function openAdminSetupModal() { closeLoginModal(false); document.getElementById('adminSetupModal').style.display = 'flex'; }
-        function closeAdminSetupModal() { document.getElementById('adminSetupModal').style.display = 'none'; document.getElementById('adminSetupForm').reset(); }
-
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('loginSubmitBtn');
-            btn.disabled = true; btn.textContent = "Wait...";
-            const { data, error } = await sb.auth.signInWithPassword({ 
-                email: document.getElementById('email').value, 
-                password: document.getElementById('password').value 
             });
-            if (error) {
-                document.getElementById('loginError').textContent = error.message;
-                document.getElementById('loginError').style.display = 'block';
-                btn.disabled = false; btn.textContent = "Sign In";
-            } else {
-                closeLoginModal();
-                window.location.reload(); // Refresh to update UI state
+
+            // === NAVIGATION ===
+            function showSection(sectionId, element) {
+                document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+                const target = document.getElementById(sectionId);
+                if(target) { target.classList.remove('hidden'); target.classList.add('fade-in'); }
+                
+                const titles = { 'dashboard': 'Dashboard', 'schedule_full': 'Full Schedule', 'registration': 'Registration', 'settings': 'Settings', 'admin_yps': 'Manage Profiles', 'admin_announcements': 'News Manager', 'admin_schedule': 'Schedule Manager' };
+                document.getElementById('pageTitle').textContent = titles[sectionId] || 'Portal';
+                
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                if(element) element.classList.add('active');
+                
+                if (sectionId.startsWith('admin_') && !isAdmin) {
+                    alert("Admin access only.");
+                    showSection('dashboard', document.querySelector('.nav-item'));
+                }
+                if(window.innerWidth <= 768) toggleSidebar();
             }
-        });
+            function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
 
-        document.getElementById('signupForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('signupSubmitBtn');
-            btn.disabled = true; btn.textContent = "Wait...";
-            const { error } = await sb.auth.signUp({ 
-                email: document.getElementById('signupEmail').value, 
-                password: document.getElementById('signupPassword').value 
+            // === MODALS ===
+            function openLoginModal() { closeSignupModal(false); document.getElementById('loginModal').style.display = 'flex'; }
+            function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; document.getElementById('loginForm').reset(); }
+            
+            function openSignupModal() { closeLoginModal(false); document.getElementById('signupModal').style.display = 'flex'; }
+            function closeSignupModal(reset=true) { document.getElementById('signupModal').style.display = 'none'; if(reset) document.getElementById('signupForm').reset(); }
+            
+            function openAdminSetupModal() { closeLoginModal(false); document.getElementById('adminSetupModal').style.display = 'flex'; }
+            function closeAdminSetupModal() { document.getElementById('adminSetupModal').style.display = 'none'; document.getElementById('adminSetupForm').reset(); }
+
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('loginSubmitBtn');
+                btn.disabled = true; btn.textContent = "Wait...";
+                const { data, error } = await sb.auth.signInWithPassword({ 
+                    email: document.getElementById('email').value, 
+                    password: document.getElementById('password').value 
+                });
+                if (error) {
+                    document.getElementById('loginError').textContent = error.message;
+                    document.getElementById('loginError').style.display = 'block';
+                    btn.disabled = false; btn.textContent = "Sign In";
+                } else {
+                    closeLoginModal();
+                    window.location.reload(); // Refresh to update UI state
+                }
             });
-            if (error) alert(error.message);
-            else { alert("Account created! You can now log in."); closeSignupModal(); }
-            btn.disabled = false; btn.textContent = "Sign Up";
-        });
-        
-        document.getElementById('adminSetupForm').addEventListener('submit', async (e) => {
-             e.preventDefault();
-             const btn = document.getElementById('setupSubmitBtn'); btn.disabled = true;
-             try {
-                 const { data: authData, error: authError } = await sb.auth.signUp({ 
-                     email: document.getElementById('setupEmail').value, 
-                     password: document.getElementById('setupPassword').value 
-                 });
-                 if (authError) throw authError;
-                 if (!authData.user) { alert("Check email for confirmation."); return; }
-                 await sb.from('admin_users').insert({ id: authData.user.id, email: authData.user.email, is_admin: true });
-                 window.location.reload();
-             } catch (err) { alert(err.message); } finally { btn.disabled = false; }
-         });
 
-         window.onclick = function(event) {
-            if (event.target == document.getElementById('loginModal')) closeLoginModal();
-            if (event.target == document.getElementById('signupModal')) closeSignupModal();
-            if (event.target == document.getElementById('adminSetupModal')) closeAdminSetupModal();
-        }
-    </script>
-</body>
-</html>
+            document.getElementById('signupForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('signupSubmitBtn');
+                btn.disabled = true; btn.textContent = "Wait...";
+                const { error } = await sb.auth.signUp({ 
+                    email: document.getElementById('signupEmail').value, 
+                    password: document.getElementById('signupPassword').value 
+                });
+                if (error) alert(error.message);
+                else { alert("Account created! You can now log in."); closeSignupModal(); }
+                btn.disabled = false; btn.textContent = "Sign Up";
+            });
+            
+            document.getElementById('adminSetupForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('setupSubmitBtn'); btn.disabled = true;
+                try {
+                    const { data: authData, error: authError } = await sb.auth.signUp({ 
+                        email: document.getElementById('setupEmail').value, 
+                        password: document.getElementById('setupPassword').value 
+                    });
+                    if (authError) throw authError;
+                    if (!authData.user) { alert("Check email for confirmation."); return; }
+                    await sb.from('admin_users').insert({ id: authData.user.id, email: authData.user.email, is_admin: true });
+                    window.location.reload();
+                } catch (err) { alert(err.message); } finally { btn.disabled = false; }
+            });
+
+            window.onclick = function(event) {
+                if (event.target == document.getElementById('loginModal')) closeLoginModal();
+                if (event.target == document.getElementById('signupModal')) closeSignupModal();
+                if (event.target == document.getElementById('adminSetupModal')) closeAdminSetupModal();
+            }
+        </script>
+    </body>
+    </html>
